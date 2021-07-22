@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>信息管理系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script type="text/javascript" src="../../../Homework/JS/jquery/jquery-1.7.1.js"></script>
+    <link href="../../../Homework/CSS/authority/basic_layout.css" rel="stylesheet" type="text/css">
+    <link href="../../../Homework/CSS/authority/common_style.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="../../../Homework/JS/authority/commonAll.js"></script>
+    <script type="text/javascript" src="../../../Homework/JS/jquery/jquery-1.4.4.min.js"></script>
+    <script type="text/javascript" src="../../../Homework/JS/My97DatePicker/WdatePicker.js" defer="defer"></script>
+    <script type="text/javascript" src="../../../Homework/JS/artDialog/artDialog.js?skin=default"></script>
+    <script type="text/javascript" src="../../../Homework/JS/newAdd/Param.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            /*
+             * 提交
+             */
+            $("#yesBtn").click(function () {
+                deleteRole();
+                window.parent.$.fancybox.close();
+            });
+
+            /*
+             * 取消
+             */
+            $("#noBtn").click(function () {
+                /**  关闭弹出iframe  **/
+                window.parent.$.fancybox.close();
+            });
+
+            var result = 'null';
+            if (result === 'success') {
+                /**  关闭弹出iframe  **/
+                window.parent.$.fancybox.close();
+            }
+        });
+
+        /**
+         * 检测角色ID、角色名称是否存在并提交form
+         */
+        function deleteRole() {
+            var roleId1 = getParams("roleId");
+
+            $.ajax({
+                url: 'roleUpdate',
+                type: 'post',
+                data: {
+                    "roleId": roleId1,
+                    "action": "delete",
+                },
+                dataType: 'json',
+                success: function (d) {
+                    if (d.fig === "error") {
+                        art.dialog({
+                            icon: 'error',
+                            title: '友情提示',
+                            drag: false,
+                            resize: false,
+                            content: '删除角色失败',
+                            ok: true,
+                        });
+                    } else {
+                        art.dialog({
+                            icon: 'success',
+                            title: '友情提示',
+                            drag: false,
+                            resize: false,
+                            content: '删除角色成功',
+                            ok: true,
+                        });
+                    }
+                }
+            })
+        }
+
+        /**
+         * 展示数据
+         */
+        $(function () {
+            var roleId = getParams("roleId");
+
+            $.ajax({
+                url: 'roleUpdate',
+                type: 'get',
+                data: {"roleId": roleId},
+                dataType: 'json',
+                success: function (d) {
+                    $("#roleId").html(d.roleId);
+                }
+            })
+        })
+    </script>
+</head>
+<body>
+<form id="submitForm" name="submitForm" action="/xngzf/archives/initFangyuan.action" method="post">
+    <input type="hidden" name="fyID" value="14458625716623" id="fyID"/>
+    <div id="container">
+        <div id="nav_links" style="margin: auto">
+            <span style="color: #1A5CC6;">删除角色</span>
+            <div id="page_close">
+                <a href="javascript:parent.$.fancybox.close();">
+                    <img src="../../../Homework/Image/common/page_close.png" width="20" height="20"
+                         style="vertical-align: text-top;"/>
+                </a>
+            </div>
+        </div>
+        <div class="ui_content">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;是否删除角色编号为<span id="roleId"></span>的角色？
+            <br><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input id="yesBtn" type="button" value="是" class="ui_input_btn01"/>
+            <input id="noBtn" type="button" value="否" class="ui_input_btn01"/>
+        </div>
+    </div>
+</form>
+</body>
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>信息管理系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script type="text/javascript" src="../../../Homework/JS/jquery/jquery-1.7.1.js"></script>
+    <link href="../../../Homework/CSS/authority/basic_layout.css" rel="stylesheet" type="text/css">
+    <link href="../../../Homework/CSS/authority/common_style.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="../../../Homework/JS/authority/commonAll.js"></script>
+    <script type="text/javascript" src="../../../Homework/JS/jquery/jquery-1.4.4.min.js"></script>
+    <script type="text/javascript" src="../../../Homework/JS/My97DatePicker/WdatePicker.js" defer="defer"></script>
+    <script type="text/javascript" src="../../../Homework/JS/artDialog/artDialog.js?skin=default"></script>
+    <script type="text/javascript" src="../../../Homework/JS/newAdd/Param.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            /*
+             * 提交
+             */
+            $("#submitButton").click(function () {
+                if (validateForm()) {
+                    checkRoleIdAneRoleNameSubmit();
+                    // window.location.href = 'RoleManage.html';
+                }
+            });
+
+            /*
+             * 取消
+             */
+            $("#cancelButton").click(function () {
+                /**  关闭弹出iframe  **/
+                window.parent.$.fancybox.close();
+            });
+
+            var result = 'null';
+            if (result === 'success') {
+                /**  关闭弹出iframe  **/
+                window.parent.$.fancybox.close();
+            }
+        });
+
+        /**
+         * 检测角色ID、角色名称是否存在并提交form
+         */
+        function checkRoleIdAneRoleNameSubmit() {
+            var role = {};
+            var roleId = $('#roleId').val();
+            var roleName = $("#roleName").val();
+
+            role.roleId = roleId
+            role.roleName = roleName;
+            role.createdBy = $('#createdBy').val();
+            if (document.getElementById("used").checked) {
+                role.isStart = "1";
+            } else if (document.getElementById("unused").checked) {
+                role.isStart = "0";
+            }
+            role.id = $('#ID').val();
+            role.action = "edit";
+
+            if (roleId !== "" && roleName !== "") {
+                // 异步判断该房室是否存在，如果已存在，给用户已提示哦
+                $.ajax({
+                    type: "POST",
+                    url: "roleUpdate",
+                    data: role,
+                    dataType: "json",
+                    success: function (d) {
+                        console.log("fig = " + d.fig + "| flag = " + d.flag);
+                        // 如果返回数据不为空，更改“房源信息”
+                        if (d.fig === "error") {
+                            switch (d.flag) {
+                                case 1:
+                                    art.dialog({
+                                        icon: 'error',
+                                        title: '友情提示',
+                                        drag: false,
+                                        resize: false,
+                                        content: '角色编号已存在',
+                                        ok: true,
+                                    });
+                                    $('#roleId').css("background", "#EEE");
+                                    $('#roleId').focus();
+                                    break;
+                                case 2:
+                                    art.dialog({
+                                        icon: 'error',
+                                        title: '友情提示',
+                                        drag: false,
+                                        resize: false,
+                                        content: '角色名称已存在',
+                                        ok: true,
+                                    });
+                                    $('#roleName').css("background", "#EEE");
+                                    $('#roleName').focus();
+                                    break;
+                                case 3:
+                                    art.dialog({
+                                        icon: 'error',
+                                        title: '友情提示',
+                                        drag: false,
+                                        resize: false,
+                                        content: '角色编号和角色名称均存在',
+                                        ok: true,
+                                    });
+                                    $('#roleId').css("background", "#EEE");
+                                    $('#roleId').focus();
+                                    $('#roleName').css("background", "#EEE");
+                                    $('#roleName').focus();
+                                    break;
+                                default:
+                                    break;
+                            }
+                            return false;
+                        } else {
+                            art.dialog({
+                                icon: 'success',
+                                title: '友情提示',
+                                drag: false,
+                                resize: false,
+                                content: '修改成功',
+                                ok: true,
+                            });
+                        }
+                    }
+                });
+            }
+            return true;
+        }
+
+        /**
+         * 展示数据
+         */
+        $(function () {
+            var roleId = getParams("roleId");
+
+            $.ajax({
+                url: 'roleUpdate',
+                type: 'get',
+                data: {"roleId": roleId},
+                dataType: 'json',
+                success: function (d) {
+                    $('#ID').val(d.id);
+                    $('#roleId').val(d.roleId);
+                    $('#roleName').val(d.roleName);
+                    if (d.isStart === 1) {
+                        $('#used').attr("checked", "checked");
+                    } else {
+                        $('#unused').attr("checked", "checked");
+                    }
+                }
+            })
+        })
+
+        /**
+         * 表单验证
+         */
+        function validateForm() {
+            if ($("#roleId").val() === "") {
+                art.dialog({icon: 'error', title: '友情提示', drag: false, resize: false, content: '填写角色编号', ok: true,});
+                return false;
+            }
+            if ($("#roleName").val() === "") {
+                art.dialog({icon: 'error', title: '友情提示', drag: false, resize: false, content: '填写角色名称', ok: true,});
+                return false;
+            }
+            if (!($("#used").is(":checked") || $("#unused").is(":checked"))) {
+                art.dialog({icon: 'error', title: '友情提示', drag: false, resize: false, content: '选择使用状态', ok: true,});
+                return false;
+            }
+            return true;
+        }
+    </script>
+</head>
+<body>
+<form id="submitForm" name="submitForm" action="/xngzf/archives/initFangyuan.action" method="post">
+    <input type="hidden" name="fyID" value="14458625716623" id="fyID"/>
+    <div id="container">
+        <div id="nav_links" style="margin: auto">
+            <span style="color: #1A5CC6;">修改角色</span>
+            <div id="page_close">
+                <a href="javascript:parent.$.fancybox.close();">
+                    <img src="../../../Homework/Image/common/page_close.png" width="20" height="20"
+                         style="vertical-align: text-top;"/>
+                </a>
+            </div>
+        </div>
+        <div class="ui_content">
+            <table cellspacing="0" cellpadding="0" width="100%" align="center" border="0">
+                <tr>
+                    <td class="ui_text_rt">
+                        <input type="text" class="ui_input_txt02" id="ID" hidden>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="ui_text_rt" width="80">角色编号&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                    <td class="ui_text_lt">
+                        <input type="text" class="ui_input_txt02" id="roleId">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="ui_text_rt">角色名称&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                    <td class="ui_text_lt">
+                        <input type="text" class="ui_input_txt02" id="roleName">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="ui_text_rt">使用状态&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                    <td class="ui_text_lt">
+                        &nbsp;&nbsp;<input type="radio" value="启用" name="status" id="used">
+                        <span>启用</span>
+                        <input type="radio" value="不启用" name="status" id="unused">
+                        <span>未启用</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td class="ui_text_lt">
+                        &nbsp;<input id="submitButton" type="button" value="保存" class="ui_input_btn01"/>
+                        &nbsp;<input id="cancelButton" type="button" value="返回" class="ui_input_btn01"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</form>
+</body>
+</html>

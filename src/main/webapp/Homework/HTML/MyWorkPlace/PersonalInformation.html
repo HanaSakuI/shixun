@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <script type="text/javascript" src="../../JS/jquery/jquery-1.7.1.js"></script>
+    <script type="text/javascript" src="../../JS/authority/commonAll.js"></script>
+    <script src="../../JS/My97DatePicker/WdatePicker.js" type="text/javascript" defer="defer"></script>
+    <script type="text/javascript" src="../../JS/artDialog/artDialog.js?skin=default"></script>
+    <title>个人资料修改<</title>
+</head>
+<script type="text/javascript">
+        function validateForm(){
+            if($("#userCode").val()==""){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写用户账号', ok:true,});
+                return false;
+            }
+            if($("#userName").val()==""){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写用户名称', ok:true,});
+                return false;
+            }
+            if($("#oldPassword").val()==""){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写旧密码', ok:true,});
+                return false;
+            }
+            if($("#newPassword").val()==""){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写新密码', ok:true,});
+                return false;
+            }
+            if($("#newPassword2").val()==""){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写新密码', ok:true,});
+                return false;
+            }
+            if($("#newPassword").val()!=$("#newPassword2").val()){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'两次密码不相同', ok:true,});
+                return false;
+            }
+            return true;
+        }
+</script>
+<body bgcolor="#d3d3d3">
+    <table align="center">
+        <tr>
+            <td>用户名：</td>
+            <td>
+                <input type="text" id = "userCode">
+            </td>
+        </tr>
+        <tr>
+            <td>用户名称：</td>
+            <td>
+                <input type="text" id = "userName">
+            </td>
+        </tr>
+        <tr>
+            <td>请输入旧密码：</td>
+            <td>
+                <input type="password" id = "oldPassword">
+            </td>
+            <td><span style="color: red">*</span> <span style="color: blue">您本次登录时的密码</span> </td>
+        </tr>
+        <tr>
+            <td>请输入新密码：</td>
+            <td>
+                <input type="password" id = "newPassword">
+            </td>
+            <td><span style="color: red">*</span> <span style="color: blue">新密码不少于6个字符</span></td>
+        </tr>
+        <tr>
+            <td>请确认新密码：</td>
+            <td>
+                <input type="password" id = "newPassword2">
+            </td>
+            <td><span style="color: red">*</span> <span style="color: blue">新密码不少于6个字符</span></td>
+        </tr>
+        <tr>
+            <td>性别：</td>
+            <td>
+                <input type="radio" name="sex" value="男" checked="checked">男&nbsp;&nbsp;&nbsp;
+                <input type="radio" name="sex" value="女">女
+            </td>
+        </tr>
+        <tr>
+            <td>年龄：</td>
+            <td>
+                <input type="text" id = "age">
+            </td>
+        </tr>
+        <tr>
+            <td>入职日期：</td>
+            <td>
+                <input type="text" id = "entryDate">
+            </td>
+        </tr>
+        <tr>
+            <td>离职日期：</td>
+            <td>
+                <input type="text" id = "dimissionDate">
+            </td>
+        </tr>
+        <tr>
+            <td>联系电话：</td>
+            <td>
+                <input type="text" id="phoneTel">
+            </td>
+        </tr>
+        <tr>
+            <td>电子邮箱：</td>
+            <td>
+                <input type="text" id="email">
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><button style="background-color:dodgerblue;" id = "submitbutton">保存修改</button>&nbsp;&nbsp;&nbsp;<button style="background-color:dodgerblue;">取消</button></td>
+        </tr>
+    </table>
+</body>
+</html>
+<script>
+    $(function (){
+        var user = {};
+        user.status = "home";
+        $.ajax({
+            url:"../Login/LoginServlet",
+            type:"post",
+            dataType:"json",
+            data:user,
+            success:function (data) {
+                if (data == null) {
+                    location.href = "/error.html";
+                }
+                $("#userCode").val(data.userCode);
+                $("#userName").val(data.userName);
+            }
+        })
+
+        $("#submitbutton").click(function (){
+            if(validateForm()){
+                var user = {};
+                user.userCode = $("#userCode").val();
+                user.userName = $("#userName").val();
+                user.oldPassword = $("#oldPassword").val();
+                user.newPassword = $("#newPassword").val();
+                user.sex =$("[name=sex]:checked").val();
+                user.age = $("#age").val();
+                user.phoneTel = $("#phoneTel").val();
+                user.email = $("#email").val();
+                user.entryDate = $("#entryDate").val();
+                user.dimissionDate = $("#dimissionDate").val();
+                user.action = "updateNew";
+
+                $.ajax({
+                    url:'../SystemConfig/userupdate',
+                    type:'post',
+                    data:user,
+                    dataType:'json',
+                    success:function (d){
+                        if(d.fig == "success"){
+                            alert("修改成功");
+                            window.location.href = "../SystemConfig/user.html";
+                        }else if(d.fig == "defect"){
+                            alert("输入旧密码错误,请重新输入");
+                        }
+                        else{
+                            alert("修改失败");
+                        }
+                    }
+                })
+            }
+        })
+    })
+</script>

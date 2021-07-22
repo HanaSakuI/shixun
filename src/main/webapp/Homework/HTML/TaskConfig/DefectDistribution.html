@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script type="text/javascript" src="../../../Homework/JS/jquery/jquery-1.7.1.js"></script>
+    <link href="../../../Homework/CSS/authority/basic_layout.css" rel="stylesheet" type="text/css">
+    <link href="../../../Homework/CSS/authority/common_style.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="../../../Homework/JS/authority/commonAll.js"></script>
+    <script type="text/javascript" src="../../../Homework/JS/jquery/jquery-1.4.4.min.js"></script>
+    <script type="text/javascript" src="../../../Homework/JS/My97DatePicker/WdatePicker.js" defer="defer"></script>
+    <script type="text/javascript" src="../../../Homework/JS/artDialog/artDialog.js?skin=default"></script>
+    <script type="text/javascript" src="../../../Homework/JS/newAdd/Param.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            /*
+             * 提交
+             */
+            $("#submitbutton").click(function () {
+                checkFyFhSubmit();
+            });
+
+            /*
+             * 取消
+             */
+            $("#cancelbutton").click(function () {
+                /**  关闭弹出iframe  **/
+                window.parent.$.fancybox.close();
+            });
+
+            var result = 'null';
+            if (result == 'success') {
+                /**  关闭弹出iframe  **/
+                window.parent.$.fancybox.close();
+            }
+        });
+
+        /** 提交form  **/
+        function checkFyFhSubmit() {
+            var s = document.getElementsByName("userInspector");
+            var length = s.length;
+            var input = "";
+            for (var i = 0; i < length; i++) {
+                if (s[i].checked) {
+                    input += s[i].value + " ";
+                }
+            }
+            if (input == "") {
+                art.dialog({icon: 'error', title: '友情提示', drag: false, resize: false, content: '您还未选择分配人员', ok: true,});
+                return;
+            }
+            var Inspection = {};
+            Inspection.productId = "runDistribute";
+            Inspection.inspetor = input;
+            Inspection.InspectCode = $("#InspectCode").val();
+            $.ajax({
+                type: "POST",
+                url: "InspectionMainServlet",
+                data: Inspection,
+                dataType: "json",
+                success: function (data) {
+                    if (data.flag == "error") {
+                        art.dialog({
+                            icon: 'error',
+                            title: '友情提示',
+                            drag: false,
+                            resize: false,
+                            content: '异常错误，修改失败',
+                            ok: true,
+                        });
+                    } else {
+                        alert("分配成功！");
+                        window.parent.$.fancybox.close();
+                    }
+                }
+            });
+        }
+
+    </script>
+</head>
+<body>
+<form id="submitForm" name="submitForm" method="post">
+    <div id="container">
+        <div id="nav_links">
+            当前位置：巡检任务管理&nbsp;>&nbsp;<span style="color: #1A5CC6;">分配巡检任务</span>
+            <div id="page_close">
+                <a href="javascript:parent.$.fancybox.close();">
+                    <img src="../../Image/common/page_close.png" width="20" height="20"
+                         style="vertical-align: text-top;"/>
+                </a>
+            </div>
+        </div>
+        <div class="ui_content">
+            <div style="float: left; width: 160px; height: 200px">
+                <table border="1" id="unassigned">
+                    <tr>
+                        <td colspan="2" align="center">
+                            <input type="text" value="待选消缺员" style="width: 150px; border: 0px; font-size: 16px">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" style="width: 50px"></td>
+                        <td><span style="width: 150px; font-size: 16px">消缺员001</span></td>
+                    </tr>
+                </table>
+            </div>
+            <div style="margin-left: 39px; float: left; width: 80px; height: 200px;" align="center">
+                <input id="choose" class="ui_input_btn01" type="button" value="选择" style="margin-top: 50px">
+                <br><br>
+                <input id="cancel" class="ui_input_btn01" type="button" value="取消" style="margin-bottom: 100px">
+            </div>
+            <div style="margin-left: 320px; width: 160px; height: 200px">
+                <table border="1" id="assigned">
+                    <tr>
+                        <td colspan="2" align="center">
+                            <input type="text" value="已选消缺员" style="width: 150px; border: 0px; font-size: 16px">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" style="width: 50px"></td>
+                        <td><span style="width: 150px; font-size: 16px">消缺员002</span></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</form>
+</body>
+<script>
+    var solveTaskCode = getParams("solveTaskCode");
+    console.log("solveTaskCode = " + solveTaskCode);
+    var solverStatus = 0;
+
+
+    $.ajax({
+        url: 'DefectDistribution',
+        type: 'get',
+        data: {
+            "solveTaskCode": solveTaskCode
+        },
+        success: function (d) {
+            var s0 = d[0];
+            var html = "";
+            $.each(s0, function (i, psSolverDetail) {
+                console.log("unassignedSolverCode = " + psSolverDetail.solverCode);
+                html += "<tr>";
+                html += "<td><input style=\"width: 50px\" type=\"checkbox\" id= \"" + psSolverDetail.solverCode + "\"></td>";
+                html += "<td><span style=\"width: 150px; font-size: 16px\">" + psSolverDetail.solverName + "</span></td>";
+                html += "</tr>";
+            });
+            var unassigned = $('#unassigned');
+            unassigned.find("tr:gt(0)").remove();
+            unassigned.append(html);
+
+            var s1 = d[1];
+            var html1 = "";
+            $.each(s1, function (i, psSolverDetail) {
+                console.log("assignedSolverCode = " + psSolverDetail.solverCode);
+                html1 += "<tr>";
+                html1 += "<td><input style=\"width: 50px\" type=\"checkbox\" id= \"" + psSolverDetail.solverCode + "\"></td>";
+                html1 += "<td><span style=\"width: 150px; font-size: 16px\">" + psSolverDetail.solverName + "</span></td>";
+                html1 += "</tr>";
+            });
+            var assigned = $('#assigned');
+            assigned.find("tr:gt(0)").remove();
+            assigned.append(html1);
+        }
+    })
+
+
+    $('#choose').click(function () {
+        console.log("choose");
+        var solverCodes = "";
+        for (let i = 1; i < 11; i++) {
+            if (($("#XQ00" + i).is(":checked"))) {
+                console.log("#XQ00" + i);
+                solverCodes += "XQ00" + i + ",";
+            }
+        }
+
+        $.ajax({
+            url: 'DefectDistribution',
+            type: 'post',
+            data: {
+                "solverCodes": solverCodes,
+                "action": "choose",
+                "solveTaskCode": solveTaskCode
+            },
+            success: function () {
+                alert("任务分配成功!");
+            }
+        })
+    })
+
+    $('#cancel').click(function () {
+        console.log("cancel");
+        var solverCodes = "";
+        for (let i = 1; i < 11; i++) {
+            if (($("#XQ00" + i).is(":checked"))) {
+                console.log("#XQ00" + i);
+                solverCodes += "XQ00" + i + ",";
+            }
+        }
+
+        $.ajax({
+            url: 'DefectDistribution',
+            type: 'post',
+            data: {
+                "solverCodes": solverCodes,
+                "action": "cancel",
+                "solveTaskCode": solveTaskCode
+            },
+            success: function () {
+                alert("取消任务分配成功!");
+            }
+        })
+    })
+</script>
+</html>

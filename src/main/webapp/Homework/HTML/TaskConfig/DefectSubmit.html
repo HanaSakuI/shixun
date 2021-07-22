@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <script type="text/javascript" src="../../JS/jquery/jquery-1.8.3.min.js"></script>
+  <link href="../../CSS/authority/DefectReceipt.css" rel="stylesheet" type="text/css">
+  <script type="text/javascript" src="../../JS/authority/Param.js"></script>
+</head>
+<body>
+  <div class = "task">
+    <table border="1" class = "tasktable">
+      <tr>
+        <th>任务编码</th>
+        <th><label class = "ui_label" id = "solveTaskCode"></label></th>
+        <th>任务名称</th>
+        <th><label class = "ui_label" id = "solveTaskName"></label></th>
+      </tr>
+      <tr>
+        <th>任务状态</th>
+        <th><label class="ui_label" id = "taskStatus"></label></th>
+        <th>工作单据</th>
+        <th><label class="ui_label" id = "workDocTypeName"></label></th>
+      </tr>
+      <tr>
+        <th>任务下发员</th>
+        <th><label class="ui_label" id = "issuedByName"></label></th>
+        <th>任务下发时间</th>
+        <th><label class="ui_label" id = "issuedTime"></label></th>
+      </tr>
+      <tr>
+        <th>任务负责人</th>
+        <th><label class="ui_label" id = "taskManagerName"></label></th>
+        <th>任务描述</th>
+        <th><label class="ui_label" id = "taskDesc"></label></th>
+      </tr>
+      <tr>
+        <th>消缺员</th>
+        <th><label class="ui_label" id = "solveName"></label></th>
+        <th>任务完成时间</th>
+        <th><label class="ui_label" id = "finishTime"></label></th>
+      </tr>
+      <tr>
+        <th>负责人审查意见</th>
+        <th><label class="ui_label" id = "managerSuggestion">
+<!--          <textarea id = "incharge"></textarea>-->
+        </label></th>
+        <th>完成情况描述</th>
+        <th><label class="ui_label" id = "taskFinishDesc"></label></th>
+      </tr>
+      <tr>
+        <th>下发人审查意见</th>
+        <th><label class="ui_label" id = "issuedSuggestion">
+<!--          <textarea id = "distributor"></textarea>-->
+        </label></th>
+        <th>是否审核通过</th>
+        <th><label class="ui_label" id = "isApproved">
+          <select name="approved" id="approved" class="ui_select01">
+            <option value="">--请选择--</option>
+            <option value="0">未通过</option>
+            <option value="1">通过</option>
+          </select>
+        </label></th>
+      </tr>
+    </table>
+  </div>
+  <div class="task">
+    <table class="table" cellspacing="0" cellpadding="0" align="center" border="0">
+      <tr>
+        <th>线路编号</th>
+        <th>杆塔编号</th>
+        <th>缺陷等级</th>
+        <th>缺陷类型</th>
+        <th>缺陷描述</th>
+        <th>发现人</th>
+        <th>发现时间</th>
+      </tr>
+    </table>
+  </div>
+
+  <div class="task">
+    <span>工作间断延期记载</span>
+    <div class="content">
+      <textarea id = "taskNotes"></textarea>
+    </div>
+    <span>工作终结报告</span><p></p><p></p><p></p>
+    <div class="content">
+      <textarea id = "taskFinishReport"></textarea>
+    </div>
+  </div>
+
+  <div class="task">
+    <input type="button" class = "ui_input_btn01" value="保存" onclick="submitDefect()">
+    <input type="button" class = "ui_input_btn01" value="取消">
+  </div>
+</body>
+</html>
+<script>
+  $(function (){
+    var solveTaskCode = getParams("solveTaskCode");
+    var solveCode = "";
+    $.ajax({
+      url:"defect",
+      type:"get",
+      dataType:"json",
+      data:{
+        "solveTaskCode":solveTaskCode,
+        "action":"receipt"
+      },
+      success:function (d){
+        $.each(d,function (i,item){
+          $("#solveTaskCode").html(solveTaskCode);
+          $("#solveTaskName").html(item.solveTaskName);
+          $("#taskStatus").html(item.taskStatus == 1?"已完成":"未完成");
+          $("#workDocTypeName").html(item.workDocTypeName);
+          $("#issuedByName").html(item.issuedByName);
+          $("#issuedTime").html(item.issuedTime);
+          $("#taskManagerName").html(item.taskManagerName);
+          $("#taskDesc").html(item.taskDesc);
+          $("#solveName").html(item.solveName);
+          $("#finishTime").html(item.finishTime);
+          $("#taskFinishDesc").html(item.taskFinishDesc);
+        })
+        $.ajax({
+          url:"bug",
+          type:"get",
+          dataType: "json",
+          data: {
+            "solveTaskCode":solveTaskCode,
+            "action":"get"
+          },
+          success:function (d){
+            var html = "";
+            $.each(d,function (i,item){
+              html += "<tr>";
+              html += "<td>" + item.lineCode + "</td>";
+              html += "<td>" + item.poleCode + "</td>";
+              html += "<td>" + item.bugLevelName + "</td>";
+              html += "<td>" + item.bugTypeName + "</td>";
+              html += "<td>" + item.bugDesc + "</td>";
+              html += "<td>" + item.discovererName + "</td>";
+              html += "<td>" + item.discoverTime + "</td>";
+            });
+            $("table").eq(1).find("tr:gt(0)").remove();
+            $("table").eq(1).append(html);
+          }
+        })
+      }
+    })
+  })
+</script>
+
+<script>
+  function submitDefect(){
+    var solveTaskCode = getParams("solveTaskCode");
+    $.ajax({
+      url:"defect",
+      type:"post",
+      dataType:"json",
+      data:{
+        "solveTaskCode":solveTaskCode,
+        "taskNotes":$("#taskNotes").val(),
+        "taskFinishReport":$("#taskFinishReport").val(),
+        "action":"submit"
+      },
+      success:function (d){
+        if(d.fig == "success"){
+          alert("提交成功");
+        }else{
+          alert("提交失败");
+        }
+      }
+    })
+  }
+</script>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>巡检任务管理</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="../../CSS/authority/basic_layout.css" rel="stylesheet" type="text/css">
+    <link href="../../CSS/authority/common_style.css" rel="stylesheet" type="text/css">
+    <link href="../../CSS/javacss/LineEdit.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="../../JS/jquery/jquery-1.7.1.js"></script>
+    <script type="text/javascript" src="../../JS/javascript/jquery.js"></script>
+    <script type="text/javascript" src="../../JS/jquery/jquery-1.4.4.min.js"></script>
+    <script type="text/javascript" src="../../JS/authority/commonAll.js"></script>
+    <script src="../../JS/My97DatePicker/WdatePicker.js" type="text/javascript" defer="defer"></script>
+    <script type="text/javascript" src="../../JS/artDialog/artDialog.js?skin=default"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            /*
+             * 提交
+             */
+            $("#submitbutton").click(function() {
+                if(validateForm()){
+                    checkFyFhSubmit();
+                }
+            });
+
+            /*
+             * 取消
+             */
+            $("#cancelbutton").click(function() {
+                /**  关闭弹出iframe  **/
+                window.parent.$.fancybox.close();
+            });
+
+            var result = 'null';
+            if(result =='success'){
+                /**  关闭弹出iframe  **/
+                window.parent.$.fancybox.close();
+            }
+        });
+
+        /** 提交form  **/
+        function checkFyFhSubmit(){
+            var lineCode = $('#lineCode').val();
+            var towerCode = $("#towerCode").val();
+            var bugType = $("#bugType").val();
+            var bugLevel = $("#bugLevel").val();
+            var time = $("#time").val();
+            var common = $("#common").val();
+            var name = $("#name").val();
+            var intactRate = $("#intactRate").val();
+            var taskCode = $("#taskCode").val();
+            var status = $("#status").val();
+            var inspection = {};
+            inspection.productId = "addRunBack";
+            inspection.taskCode = taskCode;
+            inspection.status = status;
+            inspection.lineCode = lineCode;
+            inspection.towerCode = towerCode;
+            inspection.bugType = bugType;
+            inspection.bugLevel = bugLevel;
+            inspection.common = common;
+            inspection.time = time;
+            inspection.name = name;
+            inspection.intactRate = intactRate;
+            $.ajax({
+                type:"POST",
+                url:"InspectionMainServlet",
+                data:inspection,
+                dataType : "json",
+                success:function(data){
+                    if(data.flag==="error"){
+                        art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'异常错误，请重试', ok:true,});
+                    }else{
+                        alert("回执成功！");
+                        window.parent.$.fancybox.close();
+                    }
+                }
+            });
+        }
+        /** 表单验证  **/
+        function validateForm(){
+            if($("#bugType").val()==='0'){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写缺陷类型', ok:true,});
+                return false;
+            }
+            if($("#bugLevel").val()==='0'){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写缺陷等级', ok:true,});
+                return false;
+            }
+
+            if($("#intactRate").val()===""){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写完好率', ok:true,});
+                return false;
+            }
+            if (parseInt($("#intactRate").val()) > 100 || parseInt($("#intactRate").val()) < 0){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'完好率在1-100之间', ok:true,});
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</head>
+<body>
+<form id="submitForm" name="submitForm"  method="post">
+    <input type="hidden" name="fyID" value="14458625716623" id="fyID"/>
+    <div id="container">
+        <div id="nav_links">
+            当前位置：巡检任务管理&nbsp;>&nbsp;<span style="color: #1A5CC6;">任务回执录入</span>
+            <div id="page_close">
+                <a href="javascript:parent.$.fancybox.close();">
+                    <img src="../../Image/common/page_close.png" width="20" height="20" style="vertical-align: text-top;"/>
+                </a>
+            </div>
+        </div>
+        <div class="ui_content">
+            <input type="hidden" name="taskCode" id="taskCode">
+            <input type="hidden" name="status" id="status">
+            <table class="ttable" cellspacing="0" cellpadding="0">
+                <tr class="tr">
+                    <td class="td">线路编号:&nbsp;&nbsp;<input type="text" id="lineCode" name="lineCode" value="" readonly></td>
+                    <td class="td">杆塔编号:&nbsp;&nbsp;<input type="text" id="towerCode" name="towerCode" value=""  readonly></td>
+                </tr>
+                <tr class="tr">
+                    <td class="td">缺陷类型:&nbsp;&nbsp;<select class="select" id="bugType">
+                        <option value="0">--请选择--</option>
+                        <option value="1">叉梁断裂</option>
+                        <option value="2">拦河线断裂</option>
+                        <option value="3">绝缘子爆破</option>
+                        <option value="4">杆塔倾斜</option>
+                        <option value="5">横杠弯曲下垂</option>
+                        <option value="6">瓷瓶破裂</option>
+                        <option value="7">吊杆变形</option>
+                        <option value="8">其他</option>
+                    </select></td>
+                    <td class="td">缺陷级别:&nbsp;&nbsp;<select class="select" id="bugLevel">
+                        <option value="0">--请选择--</option>
+                        <option value="1">一般</option>
+                        <option value="2">紧急</option>
+                        <option value="3">严重</option>
+                    </select></td>
+                </tr>
+                <tr><td class="td">发现时间:&nbsp;&nbsp;<input type="text" id="time" name="time" value="" readonly></td>
+                    <td class="td">发现人员:&nbsp;&nbsp;<input type="text" id="name" name="name" value=""  readonly></td></tr>
+                <tr><td class="td">完好率:&nbsp;&nbsp;<input type="text" id="intactRate" name="intactRate" oninput="value=value.replace(/[^\d]/g,'')"></td>
+                     <td class="td">缺陷描述:&nbsp;<textarea id="common" cols="30" rows="6" class="trea"> </textarea></td></tr>
+            </table>
+            <footer style="margin-top: 90px">
+                &nbsp;<input id="submitbutton" type="button" value="提交" class="firm"/>
+                &nbsp;<input id="cancelbutton" type="button" value="取消" />
+            </footer>
+
+        </div>
+    </div>
+</form>
+<div style="display:none"><script src='http://v7.cnzz.com/stat.php?id=155540&web_id=155540' language='JavaScript' charset='gb2312'></script></div>
+</body>
+
+<script>
+    $(function () {
+        var code = location.href.split(",")[0].split("=")[1];
+        var status = location.href.split(",")[1].split("=")[1];
+        if (parseInt(status) !== 2){ alert('该任务未在执行中,暂不可回执');  window.parent.$.fancybox.close();}
+        var Inspection = {};
+        Inspection.productId = "loadRunBack";
+        Inspection.InspectionTaskCode = code;
+        $("#taskCode").val(code);
+        $("#status").val(status);
+        $.ajax({
+            url:"InspectionMainServlet",
+            type:"post",
+            data:Inspection,
+            dataType: "json",
+            success:function (data) {
+                $("#lineCode").val(data.lineCode);
+                $("#towerCode").val(data.towerCode);
+                $("#time").val(data.time);
+                $("#name").val(data.name);
+            }
+        })
+    })
+</script>
+</html>

@@ -1,0 +1,279 @@
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link href="../../CSS/authority/basic_layout.css" rel="stylesheet" type="text/css">
+    <link href="../../CSS/authority/common_style.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="../../JS/jquery/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="../../JS/authority/commonAll.js"></script>
+    <script type="text/javascript" src="../../JS/fancybox/jquery.fancybox-1.3.4.js"></script>
+    <script type="text/javascript" src="../../JS/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+    <script type="text/javascript" src="../../JS/javascript/Defect.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../CSS/authority/jquery.fancybox-1.3.4.css" media="screen"></link>
+    <script type="text/javascript" src="../../JS/artDialog/artDialog.js?skin=default"></script>
+    <title>消缺任务管理</title>
+    <style>
+        .alt td {
+            background: black !important;
+        }
+    </style>
+</head>
+<body>
+<form id="submitForm" name="submitForm" action="" method="post">
+    <div id="container">
+        <div class="ui_content">
+            <div class="ui_text_indent">
+                <div id="box_border">
+                    <div id="box_top">搜索</div>
+                    <div id="box_center">
+                        任务编号：&nbsp;&nbsp;<input type="text" id="solveTaskCode" name="solveTaskCode"
+                                                class="ui_input_txt02"/>
+                        线路编号：&nbsp;&nbsp;<input type="text" id="lineCode" name="lineCode" class="ui_input_txt02"/>
+                        任务状态
+                        <select name="taskStatus" id="taskStatus" class="ui_select01">
+                            <option value="4">--请选择--</option>
+                            <option value="0">待分配</option>
+                            <option value="1">已分配</option>
+                            <option value="2">执行中</option>
+                            <option value="3">已完成</option>
+                        </select><br>
+                        下发人：&nbsp;&nbsp;<input type="text" id="issuedByName" name="issuedByName" class="ui_input_txt02">
+                        下发时间:&nbsp;&nbsp;<input type="date" id="startTime" name="startTime" class="ui_input_txt02"> -
+                        <input type="date" id="endTime" name="endTime" class="ui_input_txt02">
+                        <input type="button" id="search" name="search" value="查询" class="ui_input_btn01"/>
+                    </div>
+                    <div id="box_bottom">
+                        <input type="button" value="制定消缺任务" class="ui_input_btn01" id="addBtn"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui_content">
+            <div class="ui_tb">
+                <table class="table" cellspacing="0" cellpadding="0" width="100%" align="center" border="0"></table>
+            </div>
+        </div>
+    </div>
+</form>
+<div style="display:none">
+    <script src='http://v7.cnzz.com/stat.php?id=155540&web_id=155540' language='JavaScript' charset='gb2312'></script>
+</div>
+</body>
+<script>
+    var pageNo = 1;
+    var pageEnd;
+    var count;
+
+    function cancelWork(isCancel, solveTaskCode) {
+        if (parseInt(isCancel) == 1) {
+            alert("该任务已取消！")
+            return;
+        }
+        if (confirm("您确定是要修改编号【" + solveTaskCode + "】任务状态吗？")) {
+            //alert(id);
+            var defect = {};
+            defect.solveTaskCode = solveTaskCode;
+            defect.isCancel = "1";
+            defect.action = "change";
+            $.ajax({
+                url: 'defectedit',
+                type: 'post',
+                data: defect,
+                success: function (d) {
+                    if (d.fig == "success") {
+                        //alert("bbb");
+                        window.location.reload();
+                    } else {
+                        //alert("对不起，删除编号【"+id+"】失败");
+                        window.location.reload();
+                    }
+                }
+            })
+        }
+    }
+
+    $(function () {
+
+        $("#search").click(function () {
+            if (new Date($("#endTime").val()).getTime() < new Date($("#startTime").val()).getTime()) {
+                art.dialog({icon: 'error', title: '友情提示', drag: false, resize: false, content: '时间范围出错！', ok: true,});
+                return;
+            }
+            $.ajax({
+                url: 'defect',
+                type: 'post',
+                data: {
+                    "solveTaskCode": $("#solveTaskCode").val(),
+                    "taskStatus": $("#taskStatus").val(),
+                    "issuedByName": $("#issuedByName").val(),
+                    "startTime": $("#startTime").val(),
+                    "endTime": $("#endTime").val(),
+                    "action": "search"
+                },
+                success: function (d) {
+                    var html = "";
+                    html += "<tr>";
+                    html += "<th>任务编号</th>"
+                    html += "<th>任务名称</th>"
+                    html += "<th>工作单据</th>"
+                    html += "<th>下发人</th>"
+                    html += "<th>下发时间</th>"
+                    html += "<th>任务状态</th>"
+                    html += "<th>任务完成时间</th>"
+                    html += "<th>是否取消</th>"
+                    html += "<th>操作</th>"
+                    html += "</tr>";
+                    $.each(d, function (i, defect) {
+                        html += "<tr>";
+                        html += "<td><span ><font color='black'>" + defect.solveTaskCode + "</font></span></td>";
+                        html += "<td><span><font color='black'>" + defect.solveTaskName + "</font></span></td>";
+                        html += "<td><span><font color='black'>" + defect.workDocTypeName + "</font></span></td>";
+                        html += "<td><span><font color='black'>" + defect.issuedByName + "</font></span></td>";
+                        html += "<td><span><font color='black'>" + defect.issuedTime + "</font></span></td>";
+                        html += "<td><span><font color='black'>" + (defect.taskStatus == 0 ? "待分配" : (defect.taskStatus == 1 ? "已分配" : (defect.taskStatus == 2 ? "执行中" : "已完成"))) + "</font></span></td>";
+                        html += "<td><span><font color='black'>" + defect.finishTime + "</font></span></td>";
+                        html += "<td><span><font color='black'>" + (defect.isCancel == 1 ? "是" : "否") + "</font></span></td>";
+                        html += "<td>";
+                        html += "<a href=\"\">查看  </a>";
+                        html += "<a href=\"DefectDistribution.html?solveTaskCode=" + defect.solveTaskCode + "\" class=\"distribution\">|  分配任务  |</a> ";
+                        html += "<a href=\"Defect_edit.html?solveTaskCode=" + defect.solveTaskCode + "\" class=\"edit\">  修改  |</a> ";
+                        html += "<a href=\"javascript:cancelWork('" + defect.isCancel + "','" + defect.solveTaskCode + "')\" class=\"cancel\" >   取消</a>";
+                        html += "</td>";
+                        html += "</tr>";
+                    });
+                    $("table tr:not(:first)").remove();
+                    $("table").append(html);
+                    $("table").append("<script type=\"text/javascript\" src=\"../../JS/fancybox/defectEdit.js\"><\/script>");
+                    $("table").append("<script type=\"text/javascript\" src = \"../../../Homework/JS/javascript/Defect.js\"><\/script>");
+                }, error: function (a, b, c) {
+                    alert(b);
+                }
+            })
+
+        })
+
+
+        $.ajax({
+            url: 'defect',
+            type: 'get',
+            data: {"pageNo": pageNo, "action": "get"},
+            dataType: 'json',
+            success: function (d) {
+                var html = "";
+                html += "<tr>";
+                html += "<th>任务编号</th>"
+                html += "<th>任务名称</th>"
+                html += "<th>工作单据</th>"
+                html += "<th>下发人</th>"
+                html += "<th>下发时间</th>"
+                html += "<th>任务状态</th>"
+                html += "<th>任务完成时间</th>"
+                html += "<th>是否取消</th>"
+                html += "<th>操作</th>"
+                html += "</tr>";
+                $.each(d, function (i, defect) {
+                    html += "<tr>";
+                    html += "<td><span ><font color='black'>" + defect.solveTaskCode + "</font></span></td>";
+                    html += "<td><span><font color='black'>" + defect.solveTaskName + "</font></span></td>";
+                    html += "<td><span><font color='black'>" + defect.workDocTypeName + "</font></span></td>";
+                    html += "<td><span><font color='black'>" + defect.issuedByName + "</font></span></td>";
+                    html += "<td><span><font color='black'>" + defect.issuedTime + "</font></span></td>";
+                    html += "<td><span><font color='black'>" + (defect.taskStatus == 0 ? "待分配" : (defect.taskStatus == 1 ? "已分配" : (defect.taskStatus == 2 ? "执行中" : "已完成"))) + "</font></span></td>";
+                    html += "<td><span><font color='black'>" + defect.finishTime + "</font></span></td>";
+                    html += "<td><span><font color='black'>" + (defect.isCancel == 1 ? "是" : "否") + "</font></span></td>";
+                    html += "<td>";
+                    // html+="<a href=\"DefectLook.html?solveTaskCode="+defect.solveTaskCode+"\">查看  </a>";
+                    html += "<a href=\"DefectLook.html?solveTaskCode=" + defect.solveTaskCode + "\">查看  </a>";
+                    html += "<a href=\"DefectSubmit.html?solveTaskCode=" + defect.solveTaskCode + "\"> | 回执录入  </a>";
+                    html += "<a href=\"DefectCheck.html?solveTaskCode=" + defect.solveTaskCode + "\"> | 审查  </a>";
+                    html += "<a href=\"DefectDistribution.html?solveTaskCode=" + defect.solveTaskCode + "\" class=\"distribution\">|  分配任务  |</a> ";
+                    html += "<a href=\"Defect_edit.html?solveTaskCode=" + defect.solveTaskCode + "\" class=\"edit\">  修改  |</a> ";
+                    html += "<a href=\"javascript:cancelWork('" + defect.isCancel + "','" + defect.solveTaskCode + "')\" class=\"cancel\" >   取消</a>";
+                    html += "</td>";
+                    html += "</tr>";
+                });
+                $("table tr:not(:first)").remove();
+
+                $("table").append(html);
+                $("table").append("<script type=\"text/javascript\" src=\"../../JS/fancybox/defectEdit.js\"><\/script>");
+                $("table").append("<script type=\"text/javascript\" src = \"../../../Homework/JS/javascript/Defect.js\"><\/script>");
+            }, error: function (a, b, c) {
+                alert(b);
+            }
+        })
+    })
+</script>
+<!--<script>-->
+<!--    function statusColor(value){-->
+<!--        alert(value)-->
+<!--        if (value == "待分配"){-->
+<!--            $("span.stat").css("color","yellow");-->
+<!--        }-->
+<!--    }-->
+<!--    //分配-->
+<!--    function distribution(status) {-->
+<!--        if (parseInt(status) == 0){-->
+<!--            //todo-->
+
+<!--            // alert("未分配")-->
+<!--        }else {-->
+<!--            art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'该任务已分配', ok:true,});-->
+<!--            //  alert("该任务已分配")-->
+<!--        }-->
+<!--    }-->
+<!--    //取消-->
+<!--    function cancelWork(status,code) {-->
+<!--        //未取消-->
+<!--        if (parseInt(status) == 0) {-->
+<!--            if (confirm("您确定要取消该任务吗?"+code)){-->
+<!--                var Inspection = {};-->
+<!--                var productId = "cancel";-->
+<!--                line.productId = productId;-->
+<!--                line.InspectionTaskCode = code;-->
+
+<!--                // $.ajax({-->
+<!--                //     url: "LineServlet",-->
+<!--                //     type: "post",-->
+<!--                //     dataType: "json",-->
+<!--                //     data: line,-->
+<!--                //     success: function (data) {-->
+<!--                //         if (data.flag == "success") {-->
+<!--                //             alert("删除成功");-->
+<!--                //             location.href = "Line_List.html"-->
+<!--                //         } else {-->
+<!--                //             alert("删除失败");-->
+<!--                //         }-->
+<!--                //     }-->
+<!--                // })-->
+<!--            }-->
+
+<!--        }else{-->
+<!--            //取消-->
+<!--            art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'该任务已取消', ok:true,});-->
+<!--        }-->
+<!--    }-->
+
+<!--    //修改状态-->
+<!--    function change(change) {-->
+<!--        if (confirm("您确定要修改吗？")) {-->
+<!--            var line = {};-->
+<!--            var productId = "status";-->
+<!--            line.productId = productId;-->
+<!--            line.lineCode = change;-->
+<!--            $.ajax({-->
+<!--                url: "LineServlet",-->
+<!--                type: "post",-->
+<!--                dataType: "json",-->
+<!--                data: line,-->
+<!--                success: function (data) {-->
+<!--                    if (data.flag == "success") {-->
+<!--                        alert("修改状态成功");-->
+<!--                        location.href = "Line_List.html"-->
+<!--                    } else {-->
+<!--                        alert("修改失败");-->
+<!--                    }-->
+<!--                }-->
+<!--            })-->
+<!--        }-->
+<!--    }-->
+<!--</script>-->
+</html>

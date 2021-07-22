@@ -1,0 +1,42 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+.pain{
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-size: cover;
+    position: absolute;
+    background-image:linear-gradient(rgba(0,0,0,0.01),rgba(0,0,0,0.01)), url("../../Image/img/photo3.jpg");
+}
+h1{
+     margin-top: 10%;
+    color: red;
+    text-align: center;
+
+}
+.maindiv{
+    border-radius: 10px;
+    width: 400px;
+    height: 300px;
+    position: fixed;
+    left: 40%;
+    top:20%;
+    background: rgba(255,255,255,0.7);
+    box-shadow: 0 25px 45px rgba(0,0,0,0.1);
+    transition: 1s;
+}
+
+.childdiv{
+    position: center;
+    margin-top: 60px;
+    text-align: center;
+}
+span{
+    font-size: 22px;
+}
+a:hover{
+    transition: 0.5s;
+    color: lightsteelblue;
+}

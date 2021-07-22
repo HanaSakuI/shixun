@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>线路管理系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script type="text/javascript" src="../../JS/jquery/jquery-1.7.1.js"></script>
+    <link href="../../CSS/authority/basic_layout.css" rel="stylesheet" type="text/css">
+    <link href="../../CSS/authority/common_style.css" rel="stylesheet" type="text/css">
+    <link href="../../CSS/javacss/LineEdit.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="../../JS/authority/commonAll.js"></script>
+    <script type="text/javascript" src="../../JS/jquery/jquery-1.4.4.min.js"></script>
+    <script src="../../JS/My97DatePicker/WdatePicker.js" type="text/javascript" defer="defer"></script>
+    <script type="text/javascript" src="../../JS/artDialog/artDialog.js?skin=default"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            /*
+             * 提交
+             */
+            $("#submitbutton").click(function() {
+                if(validateForm()){
+                    checkFyFhSubmit();
+                }
+            });
+
+            /*
+             * 取消
+             */
+            $("#cancelbutton").click(function() {
+                /**  关闭弹出iframe  **/
+                window.parent.$.fancybox.close();
+            });
+
+            var result = 'null';
+            if(result =='success'){
+                /**  关闭弹出iframe  **/
+                window.parent.$.fancybox.close();
+            }
+        });
+
+        /** 提交form  **/
+        function checkFyFhSubmit(){
+            var lineCode = $('#lineCode').val();
+            var lineName = $("#lineName").val();
+            var lineLength = $("#lineLength").val();
+            var backLength = $("#backLength").val();
+            var productDate = $("#productDate").val();
+            var voltageLevel = $("#voltageLevel").val();
+            var startPoleCode = $("#startPoleCode").val();
+            var endPoleCode = $("#endPoleCode").val();
+            var towerBaseNum = $("#towerBaseNum").val();
+            var common = $("#common").val();
+            var isStart = $("#isStart").val();
+            var line = {};
+            line.productId = "changeMessage";
+            line.lineCode = lineCode;
+            line.lineName = lineName;
+            line.lineLength = lineLength;
+            line.backLength = backLength;
+            line.productDate = productDate;
+            line.voltageLevel = voltageLevel;
+            line.startPoleCode = startPoleCode;
+            line.endPoleCode = endPoleCode;
+            line.towerBaseNum = towerBaseNum;
+            line.common = common;
+            line.isStart = isStart;
+                $.ajax({
+                    type:"POST",
+                    url:"LineServlet",
+                    data:line,
+                    dataType : "json",
+                    success:function(data){
+                        if(data.flag=="error"){
+                            art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'异常错误，添加失败', ok:true,});
+                         }else{
+                            alert("修改成功！");
+                             window.parent.$.fancybox.close();
+                        }
+                    }
+                });
+            }
+        /** 表单验证  **/
+        function validateForm(){
+            if($("#lineCode").val()==""){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写线路编号', ok:true,});
+                return false;
+            }
+            if($("#lineName").val()==""){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写线路名称', ok:true,});
+                return false;
+            }
+            if($("#lineLength").val()==""){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写线路长度', ok:true,});
+                return false;
+            }
+            if($("#backLength").val()==""){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写回路长度', ok:true,});
+                return false;
+            }
+            if($("#productDate").val()==""){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写投运日期', ok:true,});
+                return false;
+            }
+            if($("#voltageLevel").val()==""){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写电压等级', ok:true,});
+                return false;
+            }
+            if($("#startPoleCode").val()==""){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写起始杆号', ok:true,});
+                return false;
+            }
+            if($("#endPoleCode").val()==""){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写终止杆号', ok:true,});
+                return false;
+            }
+            if ($("#endPoleCode").val() < $("#startPoleCode").val()){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'终止杆号必须大于起始杆号', ok:true,});
+                return false;
+            }
+
+            if($("#towerBaseNum").val()==""){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写塔基数', ok:true,});
+                return false;
+            }
+            if($("#isStart").val()==""){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写启用状态', ok:true,});
+                return false;
+            }
+            return true;
+        }
+    </script>
+</head>
+<body>
+<form id="submitForm" name="submitForm"  method="post">
+    <div id="container">
+        <div id="nav_links">
+            当前位置：线路管理&nbsp;>&nbsp;<span style="color: #1A5CC6;">修改线路</span>
+            <div id="page_close">
+                <a href="javascript:parent.$.fancybox.close();">
+                    <img src="../../Image/common/page_close.png" width="20" height="20" style="vertical-align: text-top;"/>
+                </a>
+            </div>
+        </div>
+        <div class="ui_content">
+            <table class="ttable" cellspacing="0" cellpadding="0">
+                <tr class="tr">
+                    <td class="td">线路编号:&nbsp;&nbsp;<input type="text" id="lineCode" name="lineCode" value="" readonly></td>
+                    <td class="td">线路名称:&nbsp;&nbsp;<input type="text" id="lineName" name="lineName" value="" ></td>
+                </tr>
+                <tr class="tr">
+                    <td class="td">线路长度:&nbsp;&nbsp;<input type="text" id="lineLength" oninput="value=value.replace(/[^\d]/g,'')" name="lineLength" value=""  ></td>
+                    <td class="td">回路长度:&nbsp;&nbsp;<input type="text" id="backLength" oninput="value=value.replace(/[^\d]/g,'')" name="backLength" value=""  ></td>
+                </tr>
+                <tr class="tr">
+                    <td class="td">投运日期:&nbsp;&nbsp;<input type="date" id="productDate" name="productDate" value=""  ></td>
+                    <td class="td">电压等级:&nbsp;&nbsp;<input type="text" id="voltageLevel" name="voltageLevel" value=""  ></td>
+                </tr>
+                <tr class="tr">
+                    <td class="td">起始杆号:&nbsp;&nbsp;<input type="text" id="startPoleCode" name="startPoleCode" value=""  ></td>
+                    <td class="td">终止杆号:&nbsp;&nbsp;<input type="text" id="endPoleCode" name="endPoleCode" value="" /></td>
+                </tr>
+                <tr class="tr">
+                    <td class="td">塔基数&nbsp;:&nbsp;&nbsp;<input type="text" id="towerBaseNum" oninput="value=value.replace(/[^\d]/g,'')" name="towerBaseNum" value=""  /></td>
+                    <td class="td">备注:&nbsp;
+                      <textarea id="common" cols="30" rows="6" class="trea"> </textarea>
+                    </td>
+                </tr>
+                <tr class="tr">
+                    <td class="td">启用状态:&nbsp;
+                        <select id="isStart" name="isStart" class="select">
+                            <option value="2">--请选择--</option>
+                            <option value="1" selected="selected">启用</option>
+                            <option value="0">停用</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+
+           <footer>
+               &nbsp;<input id="submitbutton" type="button" value="提交" class="firm"/>
+               &nbsp;<input id="cancelbutton" type="button" value="取消" />
+           </footer>
+
+        </div>
+    </div>
+</form>
+<div style="display:none"><script src='http://v7.cnzz.com/stat.php?id=155540&web_id=155540' language='JavaScript' charset='gb2312'></script></div>
+</body>
+ <SCRIPT>
+$(function () {
+     var lineCode = window.location.href.split("=")[1]
+     var productId = "edit"
+     var line = {}
+     line.productId = productId;
+     line.lineCode = lineCode;
+    $.ajax({
+        url: "LineServlet",
+        type: "post",
+        dataType: "json",
+        data: line,
+        success: function (data) {
+            $("#lineCode").val(data.lineCode);
+            $("#lineName").val(data.lineName);
+            $("#lineLength").val(data.lineLength);
+            $("#backLength").val(data.backLength);
+            $("#productDate").val(data.productDate);
+            $("#voltageLevel").val(data.voltageLevel);
+            $("#startPoleCode").val(data.startPoleCode);
+            $("#endPoleCode").val(data.endPoleCode);
+            $("#towerBaseNum").val(data.towerBaseNum);
+            $("#common").val(data.common);
+            $("#isStart").val(data.isStart);
+        }
+    })
+})
+ </SCRIPT>
+
+</html>

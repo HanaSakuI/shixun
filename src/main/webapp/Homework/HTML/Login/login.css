@@ -1,0 +1,142 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+.pan{
+    color: red;
+    float: bottom;
+    margin-top: 10px;
+    text-align: center;
+    font-size: 18px;
+}
+.mainPart{
+    width: 100%;
+    height: 100%;
+    background-image:linear-gradient(rgba(0,0,0,0.1),rgba(0,0,0,0.1)), url(../../Image/img/photo1.jpg);
+    background-position: center;
+    background-size: cover;
+    position: absolute;
+}
+.diva a{
+    margin-top: 5px;
+    margin-bottom: 5px;
+    height: 50px;
+    width: 49%;
+    background: rgba(255,255,255,0.2);
+    color: gray;
+    text-decoration:none;
+    display: inline-block;
+    /*水平居中*/
+    text-align: center;
+    /*垂直居中*/
+    line-height: 50px;
+    font-size: 19px;
+}
+.diva a.current{
+    background-color:  rgba(255,255,255,1);
+    color: black;
+    font-weight: bold;
+}
+.diva a::after{
+    content: '';
+    display: block;
+    clear: both;
+    background: rgba(255,255,255,1);
+}
+.dom{display: none}
+/* 登入框整体 */
+.pain{
+    border-radius: 10px ;
+    position:fixed;
+    width: 400px;
+    height: 380px;
+    margin: 7% auto;
+    alignment: center;
+    background: rgba(255,255,255,0.6);
+    top: 7%;
+    left: 40%;
+    box-shadow: 0 25px 45px rgba(0,0,0,0.1);
+    font-size: 22px;
+    padding: 10px;
+    border: 1px solid rgba(255,255,255,0.5);
+}
+
+/* 登入字体样式 */
+.pain h1{
+    position: relative;
+    color: #0000cd;
+    font-size: 35px;
+    margin-bottom: 20px;
+}
+/*下划线显示*/
+.pain h1::before{
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    width: 10px;
+    height: 3px;
+    background: mediumblue;
+    transition: 1s;
+}
+.pain h1:hover:before{ width: 400px;}
+
+ .hh{
+      margin-top:10px;
+      font-size: 15px;
+      color: red;
+      text-align: center;
+}
+
+.txt{
+    font-size: 18px;
+    margin-top: 30px;
+    width: 100%;
+    height: 50px;
+    border: none;
+    padding: 5px 20px;
+    border-radius: 30px;
+    outline: none;
+    transition: 1s;
+}
+.txt::before{
+    background: rgba(255,255,255,0.7);
+    transition: 0.5s;
+}
+.txt:hover{
+     background: #d3d3d3;
+}
+
+.butt{
+    margin-left: 30px;
+    font-size:18px;
+    color:mediumblue;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid;
+    transition: 0.5s;
+}
+.butt:hover{
+    color:deepskyblue;
+}
+
+.firm{
+    border-radius: 30px;
+    margin-top: 50px;
+    width: 100%;
+    height: 50px;
+    background: deepskyblue;
+    text-align: center;
+    font-size: 20px;
+    transition: 0.5s;
+}
+.firm:hover{background:lawngreen;}
+
+.register {
+    margin-top: 40px;
+    color: blue;
+}
+
+.forget {
+     margin-left: 60%;
+     color: blue;
+}

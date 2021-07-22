@@ -1,0 +1,208 @@
+<html lang="zh-CN">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="../../CSS/authority/basic_layout.css" rel="stylesheet" type="text/css">
+<link href="../../CSS/authority/common_style.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="../../CSS/authority/jquery.fancybox-1.3.4.css" media="screen">
+
+<title>线路管理系统</title>
+<style>
+	.alt td{ background:black !important;}
+</style>
+</head>
+<body>
+	<form id="submitForm" name="submitForm" action="" method="post">
+		<div id="container">
+			<div class="ui_content">
+				<div class="ui_text_indent">
+					<div id="box_border">
+						<div id="box_top">搜索</div>
+						<div id="box_center">
+							搜索内容：&nbsp;&nbsp;<input type="text" id="sele" name="sele" class="ui_input_txt02" />
+							运行状态
+							<select name="searchRunStatus" id="searchRunStatus" class="ui_select01">
+                                <option value="2">--请选择--</option>
+                                <option value="1">正常</option>
+                                <option value="0">检修中</option>
+                            </select>
+							启用状态
+							<select name="searchStartStatus" id="searchStartStatus" class="ui_select01">
+								<option value="2">--请选择--</option>
+								<option value="1">启用</option>
+								<option value="0">停用</option>
+							</select>
+							<input type="button" id="search" name="search" value="查询" class="ui_input_btn01" />
+						</div>
+						<div id="box_bottom">
+							<input type="button" value="新增" class="ui_input_btn01" id="addBtn" />
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="ui_content">
+				<div id="loading" style="text-align: center;display: none"><img width="50px" height="50px" src="/Homework/Image/img/loading.gif"></div>
+				<div class="ui_tb">
+					<table class="table" cellspacing="0" cellpadding="0" width="100%" align="center" border="0"></table>
+				</div>
+			</div>
+		</div>
+	</form>
+<div style="display:none"><script src='http://v7.cnzz.com/stat.php?id=155540&web_id=155540' language='JavaScript' charset='gb2312'></script></div>
+</body>
+<script type="text/javascript" src="../../JS/jquery/jquery-1.7.1.js"></script>
+<script>
+	$(function () {
+		$("#search").click(function () {
+				$("#loading").css("display","block");
+				var Line={};
+				var productId = "select";
+				var sele = $("#sele").val();
+				var searchRunStatus = $("#searchRunStatus").val();
+				var searchStartStatus = $("#searchStartStatus").val();
+				line.productId = productId;
+				line.sele = sele;
+				line.searchRunStatus = searchRunStatus;
+				line.searchStartStatus = searchStartStatus;
+				$.ajax({
+					url:"LineServlet",
+					type:"post",
+					data:line,
+					dataType: "json",
+					success:function (data) {
+						$("#loading").css("display","none");
+						var html="";
+						html+="<tr>";
+						html+="<th>线路编号</th>"
+						html+="<th>线路名称</th>"
+						html+="<th>起始杆号</th>"
+						html+="<th>终止杆号</th>"
+						html+="<th>塔基数</th>"
+						html+="<th>运行状态</th>"
+						html+="<th>启用状态</th>"
+						html+="<th>操作</th>"
+						html+="</tr>";
+						$.each(data,function(i,line){
+							html+="<tr>";
+							html+="<td id='line.lineCode'><span>"+line.lineCode+"</span></td>";
+							html+="<td><span>"+line.lineName+"</span></td>";
+							html+="<td><span>"+line.startPoleCode+"</span></td>";
+							html+="<td><span>"+line.endPoleCode+"</span></td>";
+							html+="<td><span>"+line.towerBaseNum+"</span></td>";
+							html+="<td><span>"+(line.runningStatus==1?"正常":"检修中")+"</span></td>";
+							html+="<td><span>"+(line.isStart==1 ? "启用":"停用")+"</span></td>";
+							html+="<td>";
+							html+="<a href=\"javascript:change('"+line.lineCode+"');\">"+(line.isStart==1 ? "停用  ":"启用  ")+  "</a>";
+							html+="<a href=\"Line_edit.html?lineCode="+line.lineCode+"\" class=\"edit\">|  编辑  |</a> "
+							html+="<a class=\"deleteLine\" href=\"javascript:Del('"+line.lineCode+"');\" >   删除</a>";
+							html+="</td>";
+							html+="</tr>";
+						});
+						$("table tr:not(:first)").remove();
+						$("table").append(html);
+						$("table").append("<script type=\"text/javascript\" src = \"../../JS/javascript/Line.js\"><\/script>");
+					}
+				})
+		})
+
+			var line={};
+			var productId = "selectAll";
+			line.productId = productId;
+			$("#loading").css("display","block");
+         $.ajax({
+			url:"LineServlet",
+			type:"post",
+			dataType:"json",
+			data:line,
+			success:function (data) {
+				$("#loading").css("display","none");
+				var html="";
+				html+="<tr>";
+				html+="<th>线路编号</th>"
+				html+="<th>线路名称</th>"
+				html+="<th>起始杆号</th>"
+				html+="<th>终止杆号</th>"
+				html+="<th>塔基数</th>"
+				html+="<th>运行状态</th>"
+				html+="<th>启用状态</th>"
+				html+="<th>操作</th>"
+				html+="</tr>";
+				$.each(data,function(i,line){
+					html+="<tr>";
+					html+="<td><span >"+line.lineCode+"</span></td>";
+					html+="<td><span>"+line.lineName+"</span></td>";
+					html+="<td><span>"+line.startPoleCode+"</span></td>";
+					html+="<td><span>"+line.endPoleCode+"</span></td>";
+					html+="<td><span>"+line.towerBaseNum+"</span></td>";
+					html+="<td><span>"+(line.runningStatus==1?"正常":"检修中")+"</span></td>";
+					html+="<td><span>"+(line.isStart==1 ? "启用":"停用")+"</span></td>";
+					html+="<td>";
+					html+="<a href=\"javascript:change('"+line.lineCode+"');\">"+(line.isStart==1 ? "停用  ":"启用  ")+  "</a>";
+					html+="<a href=\"Line_edit.html?lineCode="+line.lineCode+"\" class=\"edit\">|  编辑  |</a> ";
+					html+="<a class=\"deleteLine\" href=\"javascript:Del('"+line.lineCode+"');\" >   删除</a>";
+					html+="</td>";
+					html+="</tr>";
+				});
+				$("table tr:not(:first)").remove();
+				$("table").append(html);
+				$("table").append("<script type=\"text/javascript\" src = \"../../JS/javascript/Line.js\"><\/script>");
+			}
+		 })
+	})
+</script>
+<script type="text/javascript" src = "../../JS/javascript/Line.js"></script>
+<script type="text/javascript" src="../../JS/artDialog/artDialog.js?skin=default"></script>
+<script type="text/javascript" src="../../JS/authority/commonAll.js"></script>
+<script type="text/javascript" src="../../JS/fancybox/jquery.fancybox-1.3.4.js"></script>
+<script type="text/javascript" src="../../JS/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+<script>
+	//删除
+	function Del(delet) {
+		if (confirm("您确定要删除线路 " + delet + "吗？")) {
+			var line = {};
+			var productId = "delete";
+			line.productId = productId;
+			line.lineCode = delet;
+			$.ajax({
+				url: "LineServlet",
+				type: "post",
+				dataType: "json",
+				data: line,
+				success: function (data) {
+					if (data.flag == "success") {
+						alert("删除成功");
+						location.href = "Line_List.html"
+					} else {
+						alert("删除失败");
+					}
+				}
+			})
+		}
+	}
+
+
+
+	//修改状态
+	function change(change) {
+		if (confirm("您确定要修改吗？")) {
+			var line = {};
+			var productId = "status";
+			line.productId = productId;
+			line.lineCode = change;
+			$.ajax({
+				url: "LineServlet",
+				type: "post",
+				dataType: "json",
+				data: line,
+				success: function (data) {
+					if (data.flag == "success") {
+						alert("修改状态成功");
+						location.href = "Line_List.html"
+					} else {
+						alert("修改失败");
+					}
+				}
+			})
+		}
+	}
+</script>
+</html>

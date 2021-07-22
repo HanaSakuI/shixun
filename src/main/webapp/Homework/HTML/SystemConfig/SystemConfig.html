@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <script type="text/javascript" src="../../../Homework/JS/jquery/jquery-1.7.1.js"></script>
+    <script type="text/javascript" src="../../../Homework/JS/newAdd/jquery.cookie.js"></script>
+    <link href="../../../Homework/CSS/authority/basic_layout.css" rel="stylesheet" type="text/css">
+    <link href="../../../Homework/CSS/authority/common_style.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="../../../Homework/JS/authority/commonAll.js"></script>
+    <script type="text/javascript" src="../../../Homework/JS/fancybox/jquery.fancybox-1.3.4.js"></script>
+    <script type="text/javascript" src="../../../Homework/JS/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../Homework/CSS/authority/jquery.fancybox-1.3.4.css"
+          media="screen"/>
+    <script type="text/javascript" src="../../../Homework/JS/artDialog/artDialog.js?skin=default"></script>
+    <title>信息管理系统</title>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            /**
+             * 新增配置类型
+             */
+            $("#addScTypeBtn").fancybox({
+                'href': 'AddSystemConfigUp.html',
+                'width': 300,
+                'height': 200,
+                'type': 'iframe',
+                'hideOnOverlayClick': false,
+                'showCloseButton': false,
+                'onClosed': function () {
+                    window.location.href = 'SystemConfig.html';
+                }
+            });
+
+            /**
+             * 新增配置参数
+             */
+            $("#addScParametersBtn").fancybox({
+                'href': 'AddSystemConfigDown.html',
+                'width': 300,
+                'height': 220,
+                'type': 'iframe',
+                'hideOnOverlayClick': false,
+                'showCloseButton': false,
+                'onClosed': function () {
+                    window.location.href = 'SystemConfig.html';
+                }
+            });
+        });
+
+        $(function () {
+            $("#deleteScTypeBtn").click(function () {
+                var chkBoxes = $('#tableUp').find('input:checked');
+                var configCode = chkBoxes.attr('id');
+
+                $.ajax({
+                    url: 'ConfigUpdate',
+                    type: 'post',
+                    data: {
+                        "action": "delete",
+                        "configCode": configCode,
+                    },
+                    success: function (d) {
+                        if (d.fig === "error") {
+                            art.dialog({
+                                icon: 'error',
+                                title: '友情提示',
+                                drag: false,
+                                resize: false,
+                                content: '删除失败',
+                                ok: true,
+                            });
+                        } else {
+                            art.dialog({
+                                icon: 'success',
+                                title: '友情提示',
+                                drag: false,
+                                resize: false,
+                                content: '删除成功',
+                                ok: true,
+                            });
+                        }
+                    }
+                })
+            })
+
+            $("#deleteScParametersBtn").click(function () {
+                var chkBoxes1 = $('#tableDown').find('input:checked');
+                var configValueId = chkBoxes1.attr('id');
+                console.log("configValueId = " + configValueId);
+
+                $.ajax({
+                    url: 'ConfigUpdate',
+                    type: 'post',
+                    data: {
+                        "action": "delete",
+                        "configValueId": configValueId,
+                    },
+                    success: function (d) {
+                        console.log("d.fig = " + d.fig);
+                        if (d.fig === "error") {
+                            art.dialog({
+                                icon: 'error',
+                                title: '友情提示',
+                                drag: false,
+                                resize: false,
+                                content: '删除失败',
+                                ok: true,
+                            });
+                        } else {
+                            art.dialog({
+                                icon: 'success',
+                                title: '友情提示',
+                                drag: false,
+                                resize: false,
+                                content: '删除成功',
+                                ok: true,
+                            });
+                        }
+                    }
+                })
+            })
+        })
+    </script>
+    <style>
+        .alt td {
+            background: black !important;
+        }
+    </style>
+</head>
+<body>
+<form id="submitForm" name="submitForm" action="" method="post">
+    <input type="hidden" name="allIDCheck" value="" id="allIDCheck"/>
+    <input type="hidden" name="fangyuanEntity.fyXqName" value="" id="fyXqName"/>
+    <div id="container">
+        <!--  系统配置类型表-->
+        <div id="scType">
+            <div class="ui_content">
+                <div class="ui_text_indent">
+                    <div>
+                        <div>
+                            <input type="button" value="新增" class="ui_input_btn01" id="addScTypeBtn"/>
+                            <input type="button" value="查询" class="ui_input_btn01" id="showSystemConfig">
+                            <input type="button" value="删除" class="ui_input_btn01" id="deleteScTypeBtn"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui_content">
+                <div class="ui_tb">
+                    <table class="table" id="tableUp" cellspacing="0" cellpadding="0" width="100%" align="center"
+                           border="0">
+                        <tr>
+                            <th>选择</th>
+                            <th>配置类型编码</th>
+                            <th>配置类型名称</th>
+                        </tr>
+                        <tr>
+                            <td><input type="radio" id="radio"></td>
+                            <td><span>IS START</span></td>
+                            <td><span>是否启用</span></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!--  系统配置参数-->
+        <div id="scParameters">
+            <div class="ui_content">
+                <div class="ui_text_indent">
+                    <div>
+                        <div>
+                            <input type="button" value="新增" class="ui_input_btn01" id="addScParametersBtn"/>
+                            <input type="button" value="删除" class="ui_input_btn01" id="deleteScParametersBtn"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui_content">
+                <div class="ui_tb">
+                    <table class="table" id="tableDown" cellspacing="0" cellpadding="0" width="100%" align="center"
+                           border="0">
+                        <tr>
+                            <th>选择</th>
+                            <th>配置参数ID</th>
+                            <th>配置参数名称</th>
+                            <th>是否启用</th>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+</body>
+<script>
+    $(function () {
+        $.ajax({
+            url: 'SystemConfig',
+            type: 'get',
+            dataType: 'json',
+            success: function (d) {
+                var html = "";
+                $.each(d, function (i, config) {
+                    html += "<tr>";
+                    html += "<td><input type=\"radio\" name=\"radioUp\" id= \"" + config.configCode + "\"></td>";
+                    html += "<td><span>" + config.configCode + "</span></td>";
+                    html += "<td><span>" + config.configName + "</span></td>";
+                    html += "</tr>"
+                });
+                $("#tableUp").find("tr:gt(0)").remove();
+                $("#tableUp").append(html);
+            }
+        });
+
+        $('#showSystemConfig').click(function () {
+            var chkBoxes = $('#tableUp').find('input:checked');
+            var configCode = chkBoxes.attr('id');
+
+            $.ajax({
+                url: 'SystemConfig',
+                type: 'post',
+                data: {"configCode": configCode},
+                dataType: 'json',
+                success: function (d) {
+                    var html = "";
+                    $.each(d, function (i, config) {
+                        html += "<tr>";
+                        html += "<td><input type=\"radio\" name=\"radioDown\" id= \"" + config.configValueId + "\"></td>";
+                        html += "<td><span>" + config.configValueId + "</span></td>";
+                        html += "<td><span>" + config.configValueName + "</span></td>";
+                        if (config.isStart === 1) {
+                            html += "<td><span>启用</span></td>";
+                        } else if (config.isStart === 0) {
+                            html += "<td><span>未启用</span></td>";
+                        }
+                        html += "</tr>"
+                    });
+                    $("#tableDown").find("tr:gt(0)").remove();
+                    $("#tableDown").append(html);
+
+                    $.ajax({
+                        url: 'ConfigUpdate',
+                        type: 'post',
+                        data: {"configCodeFromUp": configCode},
+                        dataType: 'json',
+                        success: function (d) {
+                        }
+                    })
+                }
+            })
+
+        })
+    })
+</script>
+</html>

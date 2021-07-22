@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>信息管理系统</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <script type="text/javascript" src="../../JS/jquery/jquery-1.7.1.js"></script>
+  <link href="../../CSS/authority/basic_layout.css" rel="stylesheet" type="text/css">
+  <link href="../../CSS/authority/common_style.css" rel="stylesheet" type="text/css">
+  <link href="../../CSS/authority/jquery.fancybox-1.3.4.css" rel="stylesheet" type="text/css">
+  <script type="text/javascript" src="../../JS/authority/commonAll.js"></script>
+  <script type="text/javascript" src="../../JS/jquery/jquery-1.4.4.min.js"></script>
+  <script src="../../JS/My97DatePicker/WdatePicker.js" type="text/javascript" defer="defer"></script>
+  <script type="text/javascript" src="../../JS/artDialog/artDialog.js?skin=default"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      /*
+       * 提交
+      //  */
+      // $("#submitbutton").click(function() {
+      //   if(validateForm()){
+      //     checkFyFhSubmit();
+      //   }
+      // });
+
+      /*
+       * 取消
+       */
+      $("#cancelbutton").click(function() {
+        /**  关闭弹出iframe  **/
+        window.parent.$.fancybox.close();
+      });
+
+      var result = 'null';
+      if(result =='success'){
+        /**  关闭弹出iframe  **/
+        window.parent.$.fancybox.close();
+      }
+    });
+
+    function validateForm(){
+      if($("#userCode").val()==""){
+        art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写用户账号', ok:true,});
+        return false;
+      }
+      if($("#userName").val()==""){
+        art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写用户名称', ok:true,});
+        return false;
+      }
+      if($("#userPassword").val()==""){
+        art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写密码', ok:true,});
+        return false;
+      }
+      if($("#userRole").val()==""){
+        art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'请选择角色', ok:true,});
+        return false;
+      }
+      if($("#entryDate").val()==""){
+        art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写入职时间', ok:true,});
+        return false;
+      }
+      return true;
+    }
+  </script>
+
+
+</head>
+<body>
+
+<form id="submitForm" name="submitForm" action="" method="post">
+  <input type="hidden" name="fyID" value="14458625716623" id="fyID"/>
+  <div id="container" align="center">
+    <div id="nav_links">
+      当前位置：用户管理&nbsp;>&nbsp;<span style="color: #1A5CC6;">添加用户&nbsp;</span>
+      <div id="page_close">
+        <a href="javascript:parent.$.fancybox.close();">
+          <img src="../images/common/page_close.png" width="20" height="20" style="vertical-align: text-top;"/>
+        </a>
+      </div>
+    </div>
+    <div class="ui_content" >
+      <table  cellspacing="0" cellpadding="0" width="100%" align="left" border="0">
+        <tr>
+          <td class="ui_text_rt" width="100px">登录账号:&nbsp;&nbsp;</td>
+          <td class="ui_text_lt">
+            <input type="text" id="userCode" name="userCode"  value="" class="ui_input_txt01"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="ui_text_rt">用户名称:&nbsp;&nbsp;</td>
+          <td class="ui_text_lt">
+            <input type="text" id="userName" name="userName"  value="" class="ui_input_txt01"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="ui_text_rt">密码:&nbsp;&nbsp;</td>
+          <td class="ui_text_lt">
+            <input type="text" id="userPassword" name="userPassword"  value="" class="ui_input_txt01"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="ui_text_rt">性别:&nbsp;&nbsp;</td>
+          <td class="ui_text_lt">
+            <select name="sex" id="sex" class="ui_select01" onchange="getFyDhListByFyXqCode();">
+              <option value="">--请选择--</option>
+              <option value="男">男</option>
+              <option value="女">女</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td class="ui_text_rt">年龄:&nbsp;&nbsp;</td>
+          <td class="ui_text_lt">
+            <input type="text" id="age" name="age"  value="" class="ui_input_txt01"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="ui_text_rt">角色:&nbsp;&nbsp;</td>
+          <td class="ui_text_lt">
+            <select name="userRole" id="userRole" class="ui_select01" onchange="getFyDhListByFyXqCode();">
+              <option value="">--请选择--</option>
+              <option value="ps_role01">系统管理员</option>
+              <option value="ps_role02">线路管理员</option>
+              <option value="ps_role03">巡检员</option>
+              <option value="ps_role04">消缺员</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td class="ui_text_rt">电话:&nbsp;&nbsp;</td>
+          <td class="ui_text_lt">
+            <input type="text" id="phoneTel" name="phoneTel"  value="" class="ui_input_txt01"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="ui_text_rt">邮箱:&nbsp;&nbsp;</td>
+          <td class="ui_text_lt">
+            <input type="text" id="email" name="email"  value="" class="ui_input_txt01"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="ui_text_rt">入职时间:&nbsp;&nbsp;</td>
+          <td class="ui_text_lt">
+            <input type="date" id="entryDate" name="entryDate"  value="112" class="ui_input_txt01" onkeyup="checkFyFh();"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="ui_text_rt">离职时间:&nbsp;&nbsp;</td>
+          <td class="ui_text_lt">
+            <input type="date" id="dimissionDate" name="dimissionDate"  value="112" class="ui_input_txt01" onkeyup="checkFyFh();"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="ui_text_rt">使用状态:&nbsp;&nbsp;</td>
+          <td class="ui_text_lt">
+            <input type="radio" id="checkbox_1" name="checkbox" value="1"  checked/> 正常
+            <input type="radio" id="checkbox_0" name="checkbox" value="0"  /> 冻结
+          </td>
+        </tr>
+        <tr>
+          <td>&nbsp;</td>
+          <td class="ui_text_lt">
+            &nbsp;<input id="submitbutton" type="button" value="提交" class="ui_input_btn01"/>
+            &nbsp;<input id="cancelbutton" type="button" value="取消" class="ui_input_btn01"/>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</form>
+<div style="display:none"><script src='http://v7.cnzz.com/stat.php?id=155540&web_id=155540' language='JavaScript' charset='gb2312'></script></div>
+</body>
+</html>
+
+<script>
+  $(function (){
+
+    $("#submitbutton").click(function (){
+      if(validateForm()){
+        var user = {};
+        user.status = "home";
+        $.ajax({
+          url:"../Login/LoginServlet",
+          type:"post",
+          dataType:"json",
+          data:user,
+          success:function (data) {
+            if (data==null){
+              location.href="/error.html";
+            }
+            user.createdBy = data.userCode;
+            user.userCode = $("#userCode").val();
+            user.userName = $("#userName").val();
+            user.userPassword = $("#userPassword").val();
+            user.sex = $("#sex").val();
+            user.age = $("#age").val();
+            user.phoneTel = $("#phoneTel").val();
+            user.email = $("#email").val();
+            user.roleId = $("#userRole").val();
+            user.entryDate = $("#entryDate").val();
+            user.dimissionDate = $("#dimissionDate").val();
+            user.userStatus = $("[name=checkbox]:checked").val();
+            user.action = "add";
+
+            $.ajax({
+              url:'userupdate',
+              type:'post',
+              data:user,
+              dataType:"json",
+              success:function(d){
+                if(d.fig=="success"){
+                  alert("用户添加成功");
+                  parent.location.href = "user.html";
+                }else{
+                  alert("添加订单失败!");
+                }
+              }
+            })
+          }
+        })
+      }
+    })
+  })
+
+</script>

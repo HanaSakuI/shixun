@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>信息管理系统</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link href="../../CSS/authority/basic_layout.css" rel="stylesheet" type="text/css">
+    <link href="../../CSS/authority/common_style.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="../../JS/jquery/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="../../JS/authority/commonAll.js"></script>
+    <script type="text/javascript" src="../../JS/fancybox/jquery.fancybox-1.3.4.js"></script>
+    <script type="text/javascript" src="../../JS/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../CSS/authority/jquery.fancybox-1.3.4.css" media="screen">
+    <script type="text/javascript" src="../../JS/artDialog/artDialog.js?skin=default"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            /*
+             * 提交
+             */
+            $("#submitbutton").click(function (){
+                var defect ={ }
+                defect.solveTaskCode=$("#solveTaskCode").val();
+                defect.solveTaskName=$("#solveTaskName").val();
+                defect.workDocTypeName = $("#workDocTypeName").val();
+                defect.taskManagerName=$("#taskManagerName").val();
+                defect.issuedByName=$("#issuedByName").val();
+                defect.issuedTime=$("#issuedTime").val();
+                defect.taskDesc=$("#taskDesc").val();
+                defect.common=$("#common").val();
+                //defect.solverName=$("#solverName").val();
+                defect.action="add";
+
+                $.ajax({
+                    url: 'defectedit',
+                    type: 'post',
+                    data: defect,
+                    dataType: "json",
+                    success: function (d) {
+
+                        if (d.fig == "success") {
+                            parent.location.href = "Defect_list.html";
+                        } else {
+                            alert("添加任务失败!");
+                        }
+                    }
+
+                })
+            })
+
+
+            /*
+             * 取消
+             */
+            $("#cancelbutton").click(function() {
+                /**  关闭弹出iframe  **/
+                window.location.href="Defect_list.html";
+            });
+
+            var result = 'null';
+            if(result =='success'){
+                /**  关闭弹出iframe  **/
+                window.parent.$.close();
+            }
+        });
+    </script>
+</head>
+<body>
+<form id="submitForm" name="submitForm" action="/xngzf/archives/initFangyuan.action" method="post">
+    <input type="hidden" name="fyID" value="14458625716623" id="fyID"/>
+    <div id="container">
+        <div id="nav_links">
+            当前位置：基础数据&nbsp;>&nbsp;<span style="color: #1A5CC6;">制定消缺任务</span>
+            <div id="page_close">
+                <a href="Defect_list.html">
+                    <img src="../../Image/common/page_close.png" width="20" height="20" style="vertical-align: text-top;"/>
+                </a>
+            </div>
+        </div>
+        <div class="ui_content">
+            <table  cellspacing="0" cellpadding="0" width="100%" align="left" border="0" style="border-collapse:separate; border-spacing:10px 40px;" >
+                <tr>
+                    <td class="ui_text_rt">任务编码:      </td>
+                    <td class="ui_text_lt">
+                        <input type="text" id="solveTaskCode" name="fangyuanEntity.fyJizuMj" value="" class="ui_input_txt02"/>
+                    </td>
+                    <td class="ui_text_rt">任务名称:      </td>
+                    <td class="ui_text_lt">
+                        <input type="text" id="solveTaskName" name="fangyuanEntity.fyJizuMj" value="" class="ui_input_txt02"/>
+                    </td>
+                    <td class="ui_text_rt" width="80">工作单据:     </td>
+                    <td class="ui_text_lt">
+                        <select name="workDocTypeName" id="workDocTypeName" class="ui_select01">
+                            <option value="请选择">--请选择--</option>
+                            <option value="任务单">任务单</option>
+                            <option value="第一种单据">第一种单据</option>
+                            <option value="第二种单据">第二种单据</option>
+                        </select>
+
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="ui_text_rt">任务负责人:      </td>
+                    <td class="ui_text_lt">
+                        <input type="text" id="taskManagerName" name="fangyuanEntity.fyJizuMj" value="" class="ui_input_txt02"/>
+                    </td>
+
+                    <td class="ui_text_rt">下发人:      </td>
+                    <td class="ui_text_lt">
+                        <input type="text" id="issuedByName" name="fangyuanEntity.fyJizuMj" value="" class="ui_input_txt02"/>
+                    </td>
+
+                    <td class="ui_text_rt">下发日期:      </td>
+                    <td class="ui_text_lt">
+                        <input type="datetime-local" id="issuedTime" name="fangyuanEntity.fyJizuMj" value="" class="ui_input_txt02"/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="ui_text_rt">任务描述:      </td>
+                    <td class="ui_text_lt">
+                      <textarea id="taskDesc" rows="3" cols="20"></textarea>
+                    </td>
+
+                    <td class="ui_text_rt">备注:      </td>
+                    <td class="ui_text_lt">
+                        <textarea id="common" rows="3" cols="20"></textarea>
+                    </td>
+
+                    <td class="ui_text_rt">消缺员:      </td>
+                    <td class="ui_text_lt">
+                        <textarea id="solverName" rows="3" cols="20"></textarea>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="ui_text_rt">添加缺陷:      </td>
+                    <td class="ui_text_lt">
+                        <input type="button" value="添加缺陷" class="ui_input_btn01" id="addBtn" />
+                    </td>
+
+                </tr>
+
+                <tr>
+                    <td>&nbsp;</td>
+                    <td class="ui_text_lt">
+                        &nbsp;<input id="submitbutton" type="button" value="保存" class="ui_input_btn01"/>
+                        &nbsp;<input id="cancelbutton" type="button" value="取消" class="ui_input_btn01"/>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="ui_content">
+                <div class="ui_tb">
+                    <table class="table" cellspacing="0" cellpadding="0" width="100%" align="center" border="0" id="table1"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div style="display:none"><script src='http://v7.cnzz.com/stat.php?id=155540&web_id=155540' language='JavaScript' charset='gb2312'></script></div>
+</body>
+</html>
+<script>
+
+
+
+
+    $(function () {
+
+        $.ajax({
+            url:'bug',
+            type:'get',
+            dataType:'json',
+            data:{"action":"get"},
+            success:function (d) {
+                var html="";
+                html+="<tr>";
+                html+="<th>线路编号</th>"
+                html+="<th>杠塔编号</th>"
+                html+="<th>缺陷等级</th>"
+                html+="<th>缺陷类型</th>"
+                html+="<th>缺陷描述</th>"
+                html+="<th>发现人</th>"
+                html+="<th>发现时间</th>"
+                html+="</tr>";
+                $.each(d,function(i,bug){
+                    html+="<tr>";
+                    html+="<td><span ><font color='black'>"+bug.lineCode+"</font></span></td>";
+                    html+="<td><span><font color='black'>"+bug.poleCode+"</font></span></td>";
+                    html+="<td><span><font color='black'>"+bug.bugLevelName+"</font></span></td>";
+                    html+="<td><span><font color='black'>"+bug.bugTypeName+"</font></span></td>";
+                    html+="<td><span><font color='black'>"+bug.bugDesc+"</font></span></td>";
+                    html+="<td><span><font color='black'>"+bug.discovererName+"</font></span></td>";
+                    html+="<td><span><font color='black'>"+bug.discoverTime+"</font></span></td>";
+                    html+="<td>";
+                    html+="</td>";
+                    html+="</tr>";
+                });
+                //$("table tr:not(:first)").remove();
+                var table1=$("#table1");
+                table1.append(html);
+                table1.append("<script type=\"text/javascript\" src=\"../../JS/fancybox/defectEdit.js\"><\/script>");
+
+            },error:function (a,b,c){
+                alert(b);
+            }
+        })
+    })
+
+</script>

@@ -1,0 +1,644 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>SCT-后台系统</title>
+    <link href="../CSS/authority/main_css.css" rel="stylesheet" type="text/css"/>
+    <link href="../CSS/authority/zTreeStyle.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="../JS/jquery/jquery-1.7.1.js"></script>
+    <script type="text/javascript" src="../JS/zTree/jquery.ztree.core-3.2.js"></script>
+    <script type="text/javascript" src="../JS/authority/commonAll.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $.ajax({
+                url: 'UserPermission',
+                type: 'post',
+                success: function (user) {
+                    $('#currentUser').html(user.userCode);
+                }
+            })
+        })
+
+        /**退出系统**/
+        function logout() {
+            if (confirm("您确定要退出本系统吗？")) {
+                window.location.href = "Login/login.html";
+            }
+        }
+
+        /**获得当前日期**/
+        function getDate01() {
+            var time = new Date();
+            var myYear = time.getFullYear();
+            var myMonth = time.getMonth() + 1;
+            var myDay = time.getDate();
+            if (myMonth < 10) {
+                myMonth = "0" + myMonth;
+            }
+            document.getElementById("yue_fen").innerHTML = myYear + "." + myMonth;
+            document.getElementById("day_day").innerHTML = myYear + "." + myMonth + "." + myDay;
+        }
+
+    </script>
+    <script type="text/javascript">
+        /* zTree插件加载目录的处理  */
+        var zTree;
+
+        var setting = {
+            view: {
+                dblClickExpand: false,
+                showLine: false,
+                expandSpeed: ($.browser.msie && parseInt($.browser.version) <= 6) ? "" : "fast"
+            },
+            data: {
+                key: {
+                    name: "resourceName"
+                },
+                simpleData: {
+                    enable: true,
+                    idKey: "resourceID",
+                    pIdKey: "parentID",
+                    rootPId: ""
+                }
+            },
+            callback: {
+                onClick: zTreeOnClick
+            }
+        };
+
+        var curExpandNode = null;
+
+        function beforeExpand(treeId, treeNode) {
+            var pNode = curExpandNode ? curExpandNode.getParentNode() : null;
+            var treeNodeP = treeNode.parentTId ? treeNode.getParentNode() : null;
+            for (var i = 0, l = !treeNodeP ? 0 : treeNodeP.children.length; i < l; i++) {
+                if (treeNode !== treeNodeP.children[i]) {
+                    zTree.expandNode(treeNodeP.children[i], false);
+                }
+            }
+            while (pNode) {
+                if (pNode === treeNode) {
+                    break;
+                }
+                pNode = pNode.getParentNode();
+            }
+            if (!pNode) {
+                singlePath(treeNode);
+            }
+
+        }
+
+        function singlePath(newNode) {
+            if (newNode === curExpandNode) return;
+            if (curExpandNode && curExpandNode.open === true) {
+                if (newNode.parentTId === curExpandNode.parentTId) {
+                    zTree.expandNode(curExpandNode, false);
+                } else {
+                    var newParents = [];
+                    while (newNode) {
+                        newNode = newNode.getParentNode();
+                        if (newNode === curExpandNode) {
+                            newParents = null;
+                            break;
+                        } else if (newNode) {
+                            newParents.push(newNode);
+                        }
+                    }
+                    if (newParents != null) {
+                        var oldNode = curExpandNode;
+                        var oldParents = [];
+                        while (oldNode) {
+                            oldNode = oldNode.getParentNode();
+                            if (oldNode) {
+                                oldParents.push(oldNode);
+                            }
+                        }
+                        if (newParents.length > 0) {
+                            for (var i = Math.min(newParents.length, oldParents.length) - 1; i >= 0; i--) {
+                                if (newParents[i] !== oldParents[i]) {
+                                    zTree.expandNode(oldParents[i], false);
+                                    break;
+                                }
+                            }
+                        } else {
+                            zTree.expandNode(oldParents[oldParents.length - 1], false);
+                        }
+                    }
+                }
+            }
+            curExpandNode = newNode;
+        }
+
+        function onExpand(event, treeId, treeNode) {
+            curExpandNode = treeNode;
+        }
+
+        /** 用于捕获节点被点击的事件回调函数  **/
+        function zTreeOnClick(event, treeId, treeNode) {
+            var zTree = $.fn.zTree.getZTreeObj("dleft_tab1");
+            zTree.expandNode(treeNode, null, null, null, true);
+            // 		zTree.expandNode(treeNode);
+            // 规定：如果是父类节点，不允许单击操作
+            if (treeNode.isParent || treeNode.accessPath === "") {
+                // 			alert("父类节点无法点击哦...");
+                return false;
+            }
+            // 如果节点路径为空或者为"#"，不允许单击操作
+            if (treeNode.resourceCode !== "") {
+                $.ajax({
+                    url: 'UserPermission',
+                    type: 'get',
+                    data: {
+                        "resourceCode": treeNode.resourceCode
+                    },
+                    success: function (d) {
+                        console.log("d.fig = " + d.fig);
+                        if (d.fig === "error") {
+                            window.location.href = "main.html";
+                            alert("您没有权限打开该页面!");
+                            return false;
+                        } else {
+                            return true
+                        }
+                    }
+                })
+            }
+            // 跳到该节点下对应的路径, 把当前资源ID(resourceID)传到后台，写进Session
+            rightMain(treeNode.accessPath);
+
+            if (treeNode.isParent) {
+                $('#here_area').html('当前位置：' + treeNode.getParentNode().resourceName + '&nbsp;>&nbsp;<span style="color:#1A5CC6">' + treeNode.resourceName + '</span>');
+            } else {
+                $('#here_area').html('当前位置：系统&nbsp;>&nbsp;<span style="color:#1A5CC6">' + treeNode.resourceName + '</span>');
+            }
+        };
+
+        $(document).ready(function () {
+            $(document).ajaxStart(onStart).ajaxSuccess(onStop);
+            /** 默认异步加载"业务模块"目录  **/
+            loadMenu('YEWUMOKUAI', "dleft_tab1");
+            // 默认展开所有节点
+            if (zTree) {
+                // 默认展开所有节点
+                zTree.expandAll(true);
+            }
+        });
+
+        function loadMenu(resourceType, treeObj) {
+            data = [{
+                "accessPath": "",
+                "checked": false,
+                "delFlag": 0,
+                "parentID": 1,
+                "resourceCode": "",
+                "resourceDesc": "",
+                "resourceGrade": 2,
+                "resourceID": 2,
+                "resourceName": "我的工作平台",
+                "resourceOrder": 0,
+                "resourceType": ""
+            },
+                {
+                    "accessPath": "",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 1,
+                    "resourceCode": "",
+                    "resourceDesc": "",
+                    "resourceGrade": 2,
+                    "resourceID": 3,
+                    "resourceName": "系统管理",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 1,
+                    "resourceCode": "",
+                    "resourceDesc": "",
+                    "resourceGrade": 2,
+                    "resourceID": 4,
+                    "resourceName": "杆塔管理",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 1,
+                    "resourceCode": "",
+                    "resourceDesc": "",
+                    "resourceGrade": 2,
+                    "resourceID": 5,
+                    "resourceName": "线路管理",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 1,
+                    "resourceCode": "",
+                    "resourceDesc": "",
+                    "resourceGrade": 2,
+                    "resourceID": 6,
+                    "resourceName": "缺陷管理",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 1,
+                    "resourceCode": "",
+                    "resourceDesc": "",
+                    "resourceGrade": 2,
+                    "resourceID": 7,
+                    "resourceName": "巡检任务管理",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 1,
+                    "resourceCode": "",
+                    "resourceDesc": "",
+                    "resourceGrade": 2,
+                    "resourceID": 8,
+                    "resourceName": "消缺任务管理",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 1,
+                    "resourceCode": "",
+                    "resourceDesc": "",
+                    "resourceGrade": 2,
+                    "resourceID": 9,
+                    "resourceName": "信息统计",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "MyWorkPlace/ToDoList.html",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 2,
+                    "resourceCode": "24",
+                    "resourceDesc": "",
+                    "resourceGrade": 3,
+                    "resourceID": 10,
+                    "resourceName": "代办列表",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "MyWorkPlace/PersonalInformation.html",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 2,
+                    "resourceCode": "25",
+                    "resourceDesc": "",
+                    "resourceGrade": 3,
+                    "resourceID": 11,
+                    "resourceName": "个人资料修改",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "SystemConfig/RoleManage.html",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 3,
+                    "resourceCode": "8",
+                    "resourceDesc": "",
+                    "resourceGrade": 3,
+                    "resourceID": 12,
+                    "resourceName": "角色管理",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "SystemConfig/user.html",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 3,
+                    "resourceCode": "9",
+                    "resourceDesc": "",
+                    "resourceGrade": 3,
+                    "resourceID": 13,
+                    "resourceName": "用户管理",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "SystemConfig/RolePermissionConfig.html",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 3,
+                    "resourceCode": "10",
+                    "resourceDesc": "",
+                    "resourceGrade": 3,
+                    "resourceID": 14,
+                    "resourceName": "角色权限",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "SystemConfig/SystemConfig.html",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 3,
+                    "resourceCode": "11",
+                    "resourceDesc": "",
+                    "resourceGrade": 3,
+                    "resourceID": 15,
+                    "resourceName": "系统配置",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "TowerConfig/Tower_list.html",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 4,
+                    "resourceCode": "12",
+                    "resourceDesc": "",
+                    "resourceGrade": 3,
+                    "resourceID": 16,
+                    "resourceName": "杆塔管理",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "LineConfig/Line_List.html",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 5,
+                    "resourceCode": "13",
+                    "resourceDesc": "",
+                    "resourceGrade": 3,
+                    "resourceID": 17,
+                    "resourceName": "线路管理",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "SystemConfig/SystemConfig_List.html",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 6,
+                    "resourceCode": "14",
+                    "resourceDesc": "",
+                    "resourceGrade": 3,
+                    "resourceID": 16,
+                    "resourceName": "缺陷类型设置",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "DefectConfig/",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 6,
+                    "resourceCode": "15",
+                    "resourceDesc": "",
+                    "resourceGrade": 3,
+                    "resourceID": 16,
+                    "resourceName": "缺陷等级确认",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "TaskConfig/Inspection_List.html",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 7,
+                    "resourceCode": "16",
+                    "resourceDesc": "",
+                    "resourceGrade": 3,
+                    "resourceID": 16,
+                    "resourceName": "巡检任务制定与分配",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "TaskConfig/Inspection_RunList.html",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 7,
+                    "resourceCode": "17",
+                    "resourceDesc": "",
+                    "resourceGrade": 3,
+                    "resourceID": 16,
+                    "resourceName": "巡检任务执行与回执",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "TaskConfig/Task_List.html",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 7,
+                    "resourceCode": "18",
+                    "resourceDesc": "",
+                    "resourceGrade": 3,
+                    "resourceID": 16,
+                    "resourceName": "缺陷查询",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "TaskConfig/Defect_list.html",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 8,
+                    "resourceCode": "19",
+                    "resourceDesc": "",
+                    "resourceGrade": 3,
+                    "resourceID": 16,
+                    "resourceName": "消缺任务制定与分配",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "TaskConfig/Defect_List_huizhi.html",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 8,
+                    "resourceCode": "20",
+                    "resourceDesc": "",
+                    "resourceGrade": 3,
+                    "resourceID": 16,
+                    "resourceName": "消缺任务执行与回执",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "TaskConfig/Defect_List_chakan.html",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 8,
+                    "resourceCode": "21",
+                    "resourceDesc": "",
+                    "resourceGrade": 3,
+                    "resourceID": 16,
+                    "resourceName": "消缺查询",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "InformationStatistics/",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 9,
+                    "resourceCode": "22",
+                    "resourceDesc": "",
+                    "resourceGrade": 3,
+                    "resourceID": 16,
+                    "resourceName": "巡检记录统计",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                },
+                {
+                    "accessPath": "InformationStatistics/",
+                    "checked": false,
+                    "delFlag": 0,
+                    "parentID": 9,
+                    "resourceCode": "23",
+                    "resourceDesc": "",
+                    "resourceGrade": 3,
+                    "resourceID": 16,
+                    "resourceName": "消缺记录统计",
+                    "resourceOrder": 0,
+                    "resourceType": ""
+                }];
+            if (data != null) {
+                // 将返回的数据赋给zTree
+                $.fn.zTree.init($("#" + treeObj), setting, data);
+//              alert(treeObj);
+                zTree = $.fn.zTree.getZTreeObj(treeObj);
+                if (zTree) {
+                    // 默认展开所有节点
+                    zTree.expandAll(true);
+                }
+            }
+        }
+
+        //ajax start function
+        function onStart() {
+            $("#ajaxDialog").show();
+        }
+
+        //ajax stop function
+        function onStop() {
+            // 		$("#ajaxDialog").dialog("close");
+            $("#ajaxDialog").hide();
+        }
+    </script>
+</head>
+<body onload="getDate01()">
+<div id="top">
+    <div id="top_logo">
+        <img alt="logo" src="../../Homework/Image/common/logo.jpg" width="274" height="49"
+             style="vertical-align:middle;">
+    </div>
+    <div id="top_links">
+        <div id="top_op">
+            <ul>
+                <li>
+                    <img alt="当前用户" src="../../Homework/Image/common/user.jpg">：
+                    <span id="currentUser"></span>
+                </li>
+                <li>
+                    <img alt="事务月份" src="../../Homework/Image/common/month.jpg">：
+                    <span id="yue_fen"></span>
+                </li>
+                <li>
+                    <img alt="今天是" src="../../Homework/Image/common/date.jpg">：
+                    <span id="day_day"></span>
+                </li>
+            </ul>
+        </div>
+        <div id="top_close">
+            <a href="javascript:void(0);" onclick="logout();" target="_parent">
+                <img alt="退出系统" title="退出系统" src="../../Homework/Image/common/close.jpg"
+                     style="position: relative; top: 10px; left: 25px;">
+            </a>
+        </div>
+    </div>
+</div>
+<!-- side menu start -->
+<div id="side">
+    <div id="left_menu_cnt">
+        <div id="nav_module">
+            <img src="../../Homework/Image/common/module_1.png" width="210" height="58"/>
+        </div>
+        <div id="nav_resource">
+            <ul id="dleft_tab1" class="ztree"></ul>
+        </div>
+    </div>
+</div>
+<!-- side menu start -->
+<div id="top_nav">
+    <span id="here_area">当前位置：系统&nbsp;>&nbsp;系统介绍</span>
+</div>
+<div id="main">
+    <iframe name="right" id="rightMain" src="/Homework/HTML/introduce.html" frameborder="no" scrolling="auto"width="100%" height="100%" allowtransparency="true"/>
+</div>
+</body>
+<script type="text/javascript">
+    $(function () {
+        var User = {}
+        User.status = "home";
+        $.ajax({
+            url: "Login/LoginServlet",
+            type: "post",
+            dataType: "json",
+            data: User,
+            success: function (data) {
+                if (data == null) {
+                    location.href = "/error.html";
+                }
+                $("#userCode").html(data.userName);
+            }
+        })
+    })
+</script>
+<script type="text/javascript">
+    /**退出系统**/
+    function logout() {
+        if (confirm("您确定要退出本系统吗？")) {
+            $(function () {
+                var User = {}
+                User.status = "logout";
+                $.ajax({
+                    url: "Login/LoginServlet",
+                    type: "post",
+                    dataType: "json",
+                    data: User,
+                    success: function (data) {
+                        if (data.flag = "success") {
+                            location.href = "/index.jsp"
+                        } else {
+                            location.href = "/error.html";
+                        }
+                    }
+                })
+            })
+        }
+    }
+</script>
+</html>
+   
+ 

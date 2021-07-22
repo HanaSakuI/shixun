@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>dtree</title>
+    <link href="../../../Homework/CSS/authority/basic_layout.css" rel="stylesheet" type="text/css">
+    <link href="../../../Homework/CSS/authority/common_style.css" rel="stylesheet" type="text/css">
+    <link rel="StyleSheet" href="../../../Homework/JS/dTree/dtree.css" type="text/css"/>
+    <script type="text/javascript" src="../../../Homework/JS/dTree/dtree.js"></script>
+    <script src="../../../Homework/JS/dTree/jquery.min.js"></script>
+</head>
+
+<body>
+<div class="dtree" id="dtree_div">
+</div>
+<div id="container">
+    <div class="ui_content">
+        <div class="ui_text_indent">
+            <div id="box_border">
+                <div id="box_top">功能区</div>
+                <div id="box_bottom">
+                    <input type="button" id="searchPermission" value="查询权限" class="ui_input_btn01">
+                    <input type="button" value="更改权限" class="ui_input_btn01" id="changePermission"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    d = new dTree('d', true);   //参数一: 树名称。参数二：单选多选 true多选  false单选  默认单选
+    d.add(0, -1, '系统管理员权限管理');
+    // // dTree实例属性以此为：  节点ID，父类ID，chechbox的名称，chechbox的值，chechbox的显示名称，
+    // //chechbox是否被选中--默认是不选，chechbox是否可用：默认是可用，节点链接：默认是虚链接
+
+    d.add(1, 0, 'systemManager', '0010', '系统管理', true, false);
+    d.add(8, 1, 'systemManager', '0011', '角色管理', false, false);
+    d.add(9, 1, 'systemManager', '0012', '用户管理', false, false);
+    d.add(10, 1, 'systemManager', '0013', '角色权限', false, false);
+    d.add(11, 1, 'systemManager', '0014', '系统配置', false, false);
+
+    d.add(2, 0, 'systemManager', '0020', '杆塔管理', true, false);
+    d.add(12, 2, 'systemManager', '0021', '杆塔管理', false, false);
+
+    d.add(3, 0, 'systemManager', '0030', '线路管理', true, false);
+    d.add(13, 3, 'systemManager', '0031', '线路管理', false, false);
+
+    d.add(4, 0, 'systemManager', '0040', '缺陷管理', true, false);
+    d.add(14, 4, 'systemManager', '0041', '缺陷类型设置', false, false);
+    d.add(15, 4, 'systemManager', '0042', '缺陷等级确认', false, false);
+
+    d.add(5, 0, 'systemManager', '0050', '巡检任务管理', true, false);
+    d.add(16, 5, 'systemManager', '0051', '巡检任务制定与分配', false, false);
+    d.add(17, 5, 'systemManager', '0052', '巡检任务执行与回执', false, false);
+    d.add(18, 5, 'systemManager', '0053', '缺陷查询', false, false);
+
+    d.add(6, 0, 'systemManager', '0060', '消缺任务管理', true, false);
+    d.add(19, 6, 'systemManager', '0061', '消缺任务制定与分配', false, false);
+    d.add(20, 6, 'systemManager', '0062', '消缺任务执行与回执', false, false);
+    d.add(21, 6, 'systemManager', '0063', '消缺查询', false, false);
+
+    d.add(7, 0, 'systemManager', '0070', '信息统计', true, false);
+    d.add(22, 7, 'systemManager', '0071', '巡检记录统计', false, false);
+    d.add(23, 7, 'systemManager', '0072', '消缺记录统计', false, false);
+
+    document.write(d);
+    d.openAll();
+</script>
+<script type="text/javascript">
+    d1 = new dTree('d1', true);   //参数一: 树名称。参数二：单选多选 true多选  false单选  默认单选
+    d1.add(0, -1, '线路管理员权限管理');
+    // // dTree实例属性以此为：  节点ID，父类ID，chechbox的名称，chechbox的值，chechbox的显示名称，
+    // //chechbox是否被选中--默认是不选，chechbox是否可用：默认是可用，节点链接：默认是虚链接
+
+    d1.add(1, 0, 'lineManager', '0010', '系统管理', true, false);
+    d1.add(8, 1, 'lineManager', '0011', '角色管理', false, false);
+    d1.add(9, 1, 'lineManager', '0012', '用户管理', false, false);
+    d1.add(10, 1, 'lineManager', '0013', '角色权限', false, false);
+    d1.add(11, 1, 'lineManager', '0014', '系统配置', false, false);
+
+    d1.add(2, 0, 'lineManager', '0020', '杆塔管理', true, false);
+    d1.add(12, 2, 'lineManager', '0021', '杆塔管理', false, false);
+
+    d1.add(3, 0, 'lineManager', '0030', '线路管理', true, false);
+    d1.add(13, 3, 'lineManager', '0031', '线路管理', false, false);
+
+    d1.add(4, 0, 'lineManager', '0040', '缺陷管理', true, false);
+    d1.add(14, 4, 'lineManager', '0041', '缺陷类型设置', false, false);
+    d1.add(15, 4, 'lineManager', '0042', '缺陷等级确认', false, false);
+
+    d1.add(5, 0, 'lineManager', '0050', '巡检任务管理', true, false);
+    d1.add(16, 5, 'lineManager', '0051', '巡检任务制定与分配', false, false);
+    d1.add(17, 5, 'lineManager', '0052', '巡检任务执行与回执', false, false);
+    d1.add(18, 5, 'lineManager', '0053', '缺陷查询', false, false);
+
+    d1.add(6, 0, 'lineManager', '0060', '消缺任务管理', true, false);
+    d1.add(19, 6, 'lineManager', '0061', '消缺任务制定与分配', false, false);
+    d1.add(20, 6, 'lineManager', '0062', '消缺任务执行与回执', false, false);
+    d1.add(21, 6, 'lineManager', '0063', '消缺查询', false, false);
+
+    d1.add(7, 0, 'lineManager', '0070', '信息统计', true, false);
+    d1.add(22, 7, 'lineManager', '0071', '巡检记录统计', false, false);
+    d1.add(23, 7, 'lineManager', '0072', '消缺记录统计', false, false);
+
+    document.write(d1);
+    d1.openAll();
+</script>
+<script type="text/javascript">
+    d4 = new dTree('d4', true);   //参数一: 树名称。参数二：单选多选 true多选  false单选  默认单选
+    d4.add(0, -1, '巡检员权限管理');
+    // // dTree实例属性以此为：  节点ID，父类ID，chechbox的名称，chechbox的值，chechbox的显示名称，
+    // //chechbox是否被选中--默认是不选，chechbox是否可用：默认是可用，节点链接：默认是虚链接
+
+    d4.add(1, 0, 'inspector', '0010', '系统管理', true, false);
+    d4.add(8, 1, 'inspector', '0011', '角色管理', false, false);
+    d4.add(9, 1, 'inspector', '0012', '用户管理', false, false);
+    d4.add(10, 1, 'inspector', '0013', '角色权限', false, false);
+    d4.add(11, 1, 'inspector', '0014', '系统配置', false, false);
+
+    d4.add(2, 0, 'inspector', '0020', '杆塔管理', true, false);
+    d4.add(12, 2, 'inspector', '0021', '杆塔管理', false, false);
+
+    d4.add(3, 0, 'inspector', '0030', '线路管理', true, false);
+    d4.add(13, 3, 'inspector', '0031', '线路管理', false, false);
+
+    d4.add(4, 0, 'inspector', '0040', '缺陷管理', true, false);
+    d4.add(14, 4, 'inspector', '0041', '缺陷类型设置', false, false);
+    d4.add(15, 4, 'inspector', '0042', '缺陷等级确认', false, false);
+
+    d4.add(5, 0, 'inspector', '0050', '巡检任务管理', true, false);
+    d4.add(16, 5, 'inspector', '0051', '巡检任务制定与分配', false, false);
+    d4.add(17, 5, 'inspector', '0052', '巡检任务执行与回执', false, false);
+    d4.add(18, 5, 'inspector', '0053', '缺陷查询', false, false);
+
+    d4.add(6, 0, 'inspector', '0060', '消缺任务管理', true, false);
+    d4.add(19, 6, 'inspector', '0061', '消缺任务制定与分配', false, false);
+    d4.add(20, 6, 'inspector', '0062', '消缺任务执行与回执', false, false);
+    d4.add(21, 6, 'inspector', '0063', '消缺查询', false, false);
+
+    d4.add(7, 0, 'inspector', '0070', '信息统计', true, false);
+    d4.add(22, 7, 'inspector', '0071', '巡检记录统计', false, false);
+    d4.add(23, 7, 'inspector', '0072', '消缺记录统计', false, false);
+
+    document.write(d4);
+    d4.openAll();
+</script>
+<script type="text/javascript">
+    d3 = new dTree('d3', true);   //参数一: 树名称。参数二：单选多选 true多选  false单选  默认单选
+    d3.add(0, -1, '消缺员权限管理');
+    // // dTree实例属性以此为：  节点ID，父类ID，chechbox的名称，chechbox的值，chechbox的显示名称，
+    // //chechbox是否被选中--默认是不选，chechbox是否可用：默认是可用，节点链接：默认是虚链接
+
+    d3.add(1, 0, 'vacancy', '0010', '系统管理', true, false);
+    d3.add(8, 1, 'vacancy', '0011', '角色管理', false, false);
+    d3.add(9, 1, 'vacancy', '0012', '用户管理', false, false);
+    d3.add(10, 1, 'vacancy', '0013', '角色权限', false, false);
+    d3.add(11, 1, 'vacancy', '0014', '系统配置', false, false);
+
+    d3.add(2, 0, 'vacancy', '0020', '杆塔管理', true, false);
+    d3.add(12, 2, 'vacancy', '0021', '杆塔管理', false, false);
+
+    d3.add(3, 0, 'vacancy', '0030', '线路管理', true, false);
+    d3.add(13, 3, 'vacancy', '0031', '线路管理', false, false);
+
+    d3.add(4, 0, 'vacancy', '0040', '缺陷管理', true, false);
+    d3.add(14, 4, 'vacancy', '0041', '缺陷类型设置', false, false);
+    d3.add(15, 4, 'vacancy', '0042', '缺陷等级确认', false, false);
+
+    d3.add(5, 0, 'vacancy', '0050', '巡检任务管理', true, false);
+    d3.add(16, 5, 'vacancy', '0051', '巡检任务制定与分配', false, false);
+    d3.add(17, 5, 'vacancy', '0052', '巡检任务执行与回执', false, false);
+    d3.add(18, 5, 'vacancy', '0053', '缺陷查询', false, false);
+
+    d3.add(6, 0, 'vacancy', '0060', '消缺任务管理', true, false);
+    d3.add(19, 6, 'vacancy', '0061', '消缺任务制定与分配', false, false);
+    d3.add(20, 6, 'vacancy', '0062', '消缺任务执行与回执', false, false);
+    d3.add(21, 6, 'vacancy', '0063', '消缺查询', false, false);
+
+    d3.add(7, 0, 'vacancy', '0070', '信息统计', true, false);
+    d3.add(22, 7, 'vacancy', '0071', '巡检记录统计', false, false);
+    d3.add(23, 7, 'vacancy', '0072', '消缺记录统计', false, false);
+
+    document.write(d3);
+    d3.openAll();
+</script>
+<script type="text/javascript">
+    function test() {
+        var count = 0;
+        var obj = document.all.authority;
+
+        for (i = 0; i < obj.length; i++) {
+            if (obj[i].checked) {
+                alert(obj[i].value);
+                count++;
+            }
+        }
+    }
+
+    //搜索节点并展开节点
+    function nodeSearching() {
+        var dosearch = $.trim($("#dosearch_text").val());//获取要查询的文字
+        var dtree_div = $("#dtree_div").find(".dtree_node").show().filter(":contains('" + dosearch + "')");//获取所有包含文本的节点
+        $.each(dtree_div, function (index, element) {
+            var s = $(element).attr("node_id");
+            d.openTo(s);//根据id打开节点
+        });
+    }
+</script>
+<script type="text/javascript">
+    //#region 页面执行入口
+    $(document).ready(function () {
+        //#region 浏览器检测相关方法
+        window["MzBrowser"] = {};
+        (function () {
+            if (MzBrowser.platform) return;
+            var ua = window.navigator.userAgent;
+            MzBrowser.platform = window.navigator.platform;
+            MzBrowser.firefox = ua.indexOf("Firefox") > 0;
+            MzBrowser.opera = typeof (window.opera) == "object";
+            MzBrowser.ie = !MzBrowser.opera && ua.indexOf("MSIE") > 0;
+            MzBrowser.mozilla = window.navigator.product === "Gecko";
+            MzBrowser.netscape = window.navigator.vendor === "Netscape";
+            MzBrowser.safari = ua.indexOf("Safari") > -1;
+            if (MzBrowser.firefox) {
+                var re = /Firefox(\s|\/)(\d+(\.\d+)?)/;
+            } else if (MzBrowser.ie) {
+                var re = /MSIE( )(\d+(\.\d+)?)/;
+            } else if (MzBrowser.opera) {
+                var re = /Opera(\s|\/)(\d+(\.\d+)?)/;
+            } else if (MzBrowser.netscape) {
+                var re = /Netscape(\s|\/)(\d+(\.\d+)?)/;
+            } else if (MzBrowser.safari) {
+                var re = /Version(\/)(\d+(\.\d+)?)/;
+            } else if (MzBrowser.mozilla) {
+                var re = /rv(\:)(\d+(\.\d+)?)/;
+            }
+            if ("undefined" != typeof (re) && re.test(ua))
+                MzBrowser.version = parseFloat(RegExp.$2);
+        })();
+    });
+
+    //显示删除
+    function showRemove(obj) {
+        $(obj).addClass("remove");
+    }
+
+    //隐藏删除
+    function hideRemove(obj) {
+        $(obj).removeClass("remove");
+    }
+
+    //鼠标移动到删除图标，显示手（pointer）
+    function setRemove(obj, event) {
+        var width = $(obj).width();
+        var left = $(obj).position().left;
+        var e = event || window.event;
+        var x = IsIE(GetVersion()) ? e.x : e.pageX;
+        if (x > left + width - 9) {
+            $(obj).css("cursor", "pointer")
+        } else {
+            $(obj).css("cursor", "default")
+        }
+    }
+
+    function GetVersion() {
+        return MzBrowser.version;
+    }
+
+    function GetName() {
+        var name = "undefined";
+        if (MzBrowser.ie) {
+            name = "ie";
+        } else if (MzBrowser.firefox) {
+            name = "firefox";
+        } else if (MzBrowser.safari) {
+            name = "safari";
+        }
+        return name;
+    }
+
+    function IsIE(versionValue) {
+        if (versionValue === 11) {
+            return IsIE11();
+        }
+        var name = GetName();
+        var version = GetVersion();
+        return name === 'ie' && parseInt(version) === versionValue;
+    }
+</script>
+<script>
+    $("#searchPermission").click(function () {
+        $.ajax({
+            url: 'RolePermission',
+            type: 'post',
+            success: function (d) {
+                for (let j = 0; j < d.length; j++) {
+                    var s = d[j];
+                    $.each(s, function (i, fun) {
+                        var str = fun.checkboxId;
+                        $(str).attr("checked", true);
+                    })
+                }
+            }
+        })
+    })
+
+    $("#changePermission").click(function () {
+        var functionCodeOfSystemManager = "";
+        var functionCodeOfLineManager = "";
+        var functionCodeOfInspector = "";
+        var functionCodeOfVacancy = "";
+        for (let i = 8; i < 24; i++) {
+            if (($("#systemManager_" + i).is(":checked"))) {
+                functionCodeOfSystemManager += i + ",";
+            }
+
+            if (($("#lineManager_" + i).is(":checked"))) {
+                functionCodeOfLineManager += i + ",";
+            }
+
+            if (($("#inspector_" + i).is(":checked"))) {
+                functionCodeOfInspector += i + ",";
+            }
+
+            if (($("#vacancy_" + i).is(":checked"))) {
+                functionCodeOfVacancy += i + ",";
+            }
+        }
+
+        $.ajax({
+            url: 'RolePermissionUpdate',
+            type: 'post',
+            data: {
+                "functionCodeOfSystemManager": functionCodeOfSystemManager,
+                "functionCodeOfLineManager": functionCodeOfLineManager,
+                "functionCodeOfInspector": functionCodeOfInspector,
+                "functionCodeOfVacancy": functionCodeOfVacancy
+            },
+            success: function (d) {
+                console.log(d.fig);
+                if (d.fig === "error") {
+                    alert("更改权限失败!");
+                } else {
+                    alert("更改权限成功!");
+                    location.href = "RolePermissionConfig.html";
+                }
+            }
+        })
+    })
+
+</script>
+</body>
+</html>

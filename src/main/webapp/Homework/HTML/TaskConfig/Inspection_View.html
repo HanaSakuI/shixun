@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>巡检任务管理</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="../../CSS/authority/basic_layout.css" rel="stylesheet" type="text/css">
+    <link href="../../CSS/authority/common_style.css" rel="stylesheet" type="text/css">
+    <link href="../../CSS/javacss/LineEdit.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="../../JS/jquery/jquery-1.7.1.js"></script>
+    <script type="text/javascript" src="../../JS/javascript/jquery.js"></script>
+    <script type="text/javascript" src="../../JS/jquery/jquery-1.4.4.min.js"></script>
+    <script type="text/javascript" src="../../JS/authority/commonAll.js"></script>
+    <script src="../../JS/My97DatePicker/WdatePicker.js" type="text/javascript" defer="defer"></script>
+    <script type="text/javascript" src="../../JS/artDialog/artDialog.js?skin=default"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            /*
+             * 提交
+             */
+            $("#submitbutton").click(function() {
+                if(validateForm()){
+                    checkFyFhSubmit();
+                }
+            });
+
+            /*
+             * 取消
+             */
+            $("#cancelbutton").click(function() {
+                /**  关闭弹出iframe  **/
+                window.parent.$.fancybox.close();
+            });
+
+            var result = 'null';
+            if(result =='success'){
+                /**  关闭弹出iframe  **/
+                window.parent.$.fancybox.close();
+            }
+        });
+
+        /** 提交form  **/
+        function checkFyFhSubmit(){
+            var lineCode = $('#lineCode').val();
+            var lineName = $("#lineName").val();
+            var startPoleCode = $("#startPoleCode").val();
+            var endPoleCode = $("#endPoleCode").val();
+            var created = $("#created").val();
+            var common = $("#common").val();
+            var select = $("#select").val();
+            var createdDate = $("#createdDate").val();
+            var inspection = {};
+            inspection.productId = "edit";
+            inspection.lineCode = lineCode;
+            inspection.lineName = lineName;
+            inspection.startPoleCode = startPoleCode;
+            inspection.endPoleCode = endPoleCode;
+            inspection.common = common;
+            inspection.created = created;
+            inspection.select = select;
+            inspection.createdDate = createdDate;
+            $.ajax({
+                type:"POST",
+                url:"InspectionMainServlet",
+                data:inspection,
+                dataType : "json",
+                success:function(data){
+                    if(data.flag=="error"){
+                        art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'异常错误，修改失败', ok:true,});
+                    }else{
+                        alert("修改成功！");
+                        window.parent.$.fancybox.close();
+                    }
+                }
+            });
+
+        }
+        /** 表单验证  **/
+        function validateForm(){
+            if($("#lineCode").val()==""){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写任务编号', ok:true,});
+                return false;
+            }
+            if($("#lineName").val()==""){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写任务名称', ok:true,});
+                return false;
+            }
+
+            if($("#startPoleCode").val()==""){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写起始杆号', ok:true,});
+                return false;
+            }
+            if($("#endPoleCode").val()==""){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'填写终止杆号', ok:true,});
+                return false;
+            }
+            if($("#select").val()=="0"){
+                art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'选择路线', ok:true,});
+                return false;
+            }
+            return true;
+        }
+    </script>
+</head>
+<body>
+<form id="submitForm" name="submitForm"  method="post">
+    <input type="hidden" name="fyID" value="14458625716623" id="fyID"/>
+    <div id="container">
+        <div id="nav_links">
+            当前位置：巡检任务管理&nbsp;>&nbsp;<span style="color: #1A5CC6;">新增巡检任务</span>
+            <div id="page_close">
+                <a href="javascript:parent.$.fancybox.close();">
+                    <img src="../../Image/common/page_close.png" width="20" height="20" style="vertical-align: text-top;"/>
+                </a>
+            </div>
+        </div>
+        <div class="ui_content" style="height: 210px;border: 1px solid;">
+            <table class="ttable" cellspacing="0" cellpadding="0" id="table1">
+                <tr class="tr">
+                    <td class="td">任务编号:&nbsp;&nbsp;<label id="InspetCode" name="InspetCode" >测试 </label></td>
+                    <td class="td">任务名称:&nbsp;&nbsp;<label id="InspetName" name="InspetName" > 测试</label></td>
+                    <td class="td">巡检路线:&nbsp;&nbsp;<label id="lineName" name="lineName" > 测试</label></td>
+                </tr>
+                <tr class="tr">
+                    <td class="td">起始杆号:&nbsp;&nbsp;<label type="text" id="startPoleCode" name="startPoleCode" >测试</label></td>
+                    <td class="td">终止杆号:&nbsp;&nbsp;<label  id="endPoleCode" name="endPoleCode">测试</label></td>
+                    <td class="td">下发人:&nbsp;&nbsp;&nbsp; <label  id="creator" name="creator" >测试</label></td>
+                </tr>
+                <tr class="tr">
+                    <td class="td">下发日期:&nbsp;&nbsp; <label  id="createdDate" name="createdDate" >测试</label></td>
+                    <td class="td">任务状态:&nbsp;&nbsp; <label  id="status" name="status"   >测试</label></td>
+                    <td class="td">任务完成时间:&nbsp;&nbsp; <label  id="overTime" name="overTime" >测试</label></td>
+                </tr>
+            </table>
+        </div>
+
+
+        <div class="ui_content" style="height: 400px;border: 1px solid;margin-top: 3px" id="table12">
+            <table class="ttable" cellspacing="0" cellpadding="0">
+                <tr class="tr">
+                    <td class="td">线路编号:&nbsp;&nbsp;<label id="lineCode" name="lineCode" >null </label></td>
+                    <td class="td">杆塔编号:&nbsp;&nbsp;<label id="towerCode" name="towerCode" > null</label></td>
+                    <td class="td">有无故障:&nbsp;&nbsp;<label id="isBug" name="isBug" > null</label></td>
+                </tr>
+                <tr class="tr">
+                    <td class="td">完好率:&nbsp;&nbsp;<label type="text" id="intactRate" name="intactRate" >null</label></td>
+                    <td class="td">缺陷类型:&nbsp;&nbsp;<label  id="bugType" name="bugType">null</label></td>
+                    <td class="td">缺陷级别:&nbsp;&nbsp;&nbsp; <label  id="bugLevel" name="bugLevel" >null</label></td>
+                </tr>
+                <tr class="tr">
+                    <td class="td">缺陷描述:&nbsp;&nbsp; <label  id="common" name="common" >null</label></td>
+                    <td class="td">巡检时间:&nbsp;&nbsp; <label  id="InspectTime" name="InspectTime" >null</label></td>
+                    <td class="td">巡检员:&nbsp;&nbsp; <label  id="Inspector" name="Inspector" >null</label></td>
+                </tr>
+                <tr class="tr">
+                    <td class="td">缺陷发现人:&nbsp;&nbsp; <label  id="discover" name="discover" >null</label></td>
+                    <td class="td">发现时间:&nbsp;&nbsp; <label  id="discoverTime" name="discoverTime"   >null</label></td>
+                  </tr>
+                <tr class="tr">
+                     <td class="td">下发员:&nbsp;&nbsp; <label  id="createdBy" name="createdBy" >null</label></td>
+                    <td class="td">下发时间:&nbsp;&nbsp; <label  id="createdTime" name="createdTime" >null</label></td>
+                </tr>
+            </table>
+        </div>
+<!--        <footer style="margin-top: 90px">-->
+<!--            &nbsp;<input id="cancelbutton" type="button" value="关闭" />-->
+<!--        </footer>-->
+    </div>
+</form>
+<div style="display:none"><script src='http://v7.cnzz.com/stat.php?id=155540&web_id=155540' language='JavaScript' charset='gb2312'></script></div>
+</body>
+
+<script>
+    $(function () {
+        var InspectionTaskCode = location.href.split("=")[1];
+        var Inspection = {};
+        Inspection.productId = "selectByCode";
+        Inspection.InspectionTaskCode = InspectionTaskCode;
+        $.ajax({
+            url:"InspectionMainServlet",
+            type:"post",
+            data:Inspection,
+            dataType: "json",
+            success:function (data) {
+                $("#InspetCode").html(data.inspectionTaskCode);
+                $("#InspetName").html(data.inspectionTaskName);
+                $("#lineName").html(data.lineName);
+                $("#startPoleCode").html(data.startPoleCode);
+                $("#endPoleCode").html(data.endPoleCode);
+                $("#creator").html(data.issuedByName);
+                $("#createdDate").html(data.issuedTime);
+                $("#status").html(data.taskStatusName);
+                $("#overTime").html(data.finishTime);
+            }
+        })
+
+        var Inspection2 = {};
+        Inspection2.productId = "loadDetail";
+        Inspection2.InspectionTaskCode = InspectionTaskCode;
+        $.ajax({
+            url:"InspectionMainServlet",
+            type:"post",
+            data:Inspection2,
+            dataType: "json",
+            success:function (data) {
+                $("#lineCode").html(data.lineCode);
+                $("#towerCode").html(data.poleCode);
+                $("#isBug").html(data.isBugName);
+                $("#intactRate").html(data.intactRate+"%");
+                $("#bugType").html(data.bugTypeName);
+                $("#bugLevel").html(data.bugLevelName);
+                $("#common").html(data.common);
+                $("#InspectTime").html(data.inspectTime);
+                $("#Inspector").html(data.inspector);
+                $("#discover").html(data.discoverName);
+                $("#discoverTime").html(data.discoverTime);
+                $("#createdBy").html(data.createdBy);
+                $("#createdTime").html(data.creationTime);
+            }
+        })
+    })
+</script>
+</html>

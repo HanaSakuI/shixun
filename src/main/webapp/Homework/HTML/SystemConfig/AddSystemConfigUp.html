@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>信息管理系统</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <script type="text/javascript" src="../../../Homework/JS/jquery/jquery-1.7.1.js"></script>
+  <link href="../../../Homework/CSS/authority/basic_layout.css" rel="stylesheet" type="text/css">
+  <link href="../../../Homework/CSS/authority/common_style.css" rel="stylesheet" type="text/css">
+  <script type="text/javascript" src="../../../Homework/JS/authority/commonAll.js"></script>
+  <script type="text/javascript" src="../../../Homework/JS/jquery/jquery-1.4.4.min.js"></script>
+  <script src="../../../Homework/JS/My97DatePicker/WdatePicker.js" type="text/javascript" defer="defer"></script>
+  <script type="text/javascript" src="../../../Homework/JS/artDialog/artDialog.js?skin=default"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      /*
+       * 提交
+       */
+      $("#submitbutton").click(function () {
+        if (validateForm()) {
+          checkConfigCodeAndConfigName();
+        }
+      });
+
+      /*
+       * 取消
+       */
+      $("#cancelbutton").click(function () {
+        /**  关闭弹出iframe  **/
+        window.parent.$.fancybox.close();
+      });
+
+      var result = 'null';
+      if (result === 'success') {
+        /**  关闭弹出iframe  **/
+        window.parent.$.fancybox.close();
+      }
+    });
+
+    /**
+     * 检测configCode、configName是否存在并提交form
+     **/
+    function checkConfigCodeAndConfigName() {
+      var config = {};
+      var configCode = $('#configCode').val();
+      var configName = $("#configName").val();
+
+      config.configCode = configCode
+      config.configName = configName;
+      config.action = "addUp";
+
+      if (configCode !== "" && configName !== "") {
+        // 异步判断该房室是否存在，如果已存在，给用户已提示哦
+        $.ajax({
+          type: "POST",
+          url: "ConfigUpdate",
+          data: config,
+          dataType: "json",
+          success: function (d) {
+            // 如果返回数据不为空，更改“房源信息”
+            if (d.fig === "error") {
+              switch (d.flag) {
+                case 1:
+                  art.dialog({
+                    icon: 'error',
+                    title: '友情提示',
+                    drag: false,
+                    resize: false,
+                    content: '配置类型编码已存在',
+                    ok: true,
+                  });
+                  $('#roleId').css("background", "#EEE");
+                  $('#roleId').focus();
+                  break;
+                case 2:
+                  art.dialog({
+                    icon: 'error',
+                    title: '友情提示',
+                    drag: false,
+                    resize: false,
+                    content: '配置类型名称已存在',
+                    ok: true,
+                  });
+                  $('#roleName').css("background", "#EEE");
+                  $('#roleName').focus();
+                  break;
+                case 3:
+                  art.dialog({
+                    icon: 'error',
+                    title: '友情提示',
+                    drag: false,
+                    resize: false,
+                    content: '配置类型编码和配置类型名称已存在',
+                    ok: true,
+                  });
+                  $('#roleId').css("background", "#EEE");
+                  $('#roleId').focus();
+                  $('#roleName').css("background", "#EEE");
+                  $('#roleName').focus();
+                  break;
+                default:
+                  break;
+              }
+              return false;
+            } else {
+              art.dialog({
+                icon: 'success',
+                title: '友情提示',
+                drag: false,
+                resize: false,
+                content: '添加成功',
+                ok: true,
+              });
+            }
+          }
+        });
+      }
+      return true;
+    }
+
+    /** 表单验证  **/
+    function validateForm() {
+      if ($("#configCode").val() === "") {
+        art.dialog({icon: 'error', title: '友情提示', drag: false, resize: false, content: '填写配置类型编码', ok: true,});
+        return false;
+      }
+      if ($("#configName").val() === "") {
+        art.dialog({icon: 'error', title: '友情提示', drag: false, resize: false, content: '填写配置类型名称', ok: true,});
+        return false;
+      }
+      return true;
+    }
+  </script>
+</head>
+<body>
+<form id="submitForm" name="submitForm" action="" method="post">
+  <input type="hidden" name="fyID" value="14458625716623" id="fyID"/>
+  <div id="container">
+    <div id="nav_links" style="margin: auto">
+      <span style="color: #1A5CC6;">添加系统配置</span>
+      <div id="page_close">
+        <a href="javascript:parent.$.fancybox.close();">
+          <img src="../../../Homework/Image/common/page_close.png" width="20" height="20" style="vertical-align: text-top;"/>
+        </a>
+      </div>
+    </div>
+    <div class="ui_content">
+      <table cellspacing="0" cellpadding="0" width="100%" align="center" border="0">
+        <tr>
+          <td class="ui_text_rt" width="100">配置类型编码</td>
+          <td class="ui_text_lt">
+            <input type="text" class="ui_input_txt02" id="configCode">
+          </td>
+        </tr>
+        <tr>
+          <td class="ui_text_rt" width="100">配置类型名称</td>
+          <td class="ui_text_lt">
+            <input type="text" class="ui_input_txt02" id="configName">
+          </td>
+        </tr>
+        <tr>
+          <td>&nbsp;</td>
+          <td class="ui_text_lt">
+            &nbsp;<input id="submitbutton" type="button" value="保存" class="ui_input_btn01"/>
+            &nbsp;<input id="cancelbutton" type="button" value="返回" class="ui_input_btn01"/>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</form>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link href="../../CSS/authority/basic_layout.css" rel="stylesheet" type="text/css">
+    <link href="../../CSS/authority/common_style.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="../../CSS/authority/jquery.fancybox-1.3.4.css" media="screen">
+
+    <title>缺陷查询</title>
+    <style>
+        .alt td{ background:black !important;}
+    </style>
+</head>
+<body>
+<form id="submitForm" name="submitForm" action="" method="post">
+    <div id="container">
+        <div class="" style="height: 125px">
+            <div class="ui_text_indent">
+                <div id="box_border">
+                    <div id="box_top">搜索</div>
+                    <div id="box_center">
+                        任务编号：&nbsp;&nbsp;<input type="text" id="taskCode" name="taskCode" class="ui_input_txt02" />
+                        线路编号：&nbsp;&nbsp;<input type="text" id="lineCode" name="lineCode" class="ui_input_txt02" />
+                        缺陷类型
+                        <select name="bugType" id="bugType" class="ui_select01">
+                            <option value="0">--请选择--</option>
+                            <option value="1">叉梁断裂</option>
+                            <option value="2">拦河线断裂</option>
+                            <option value="3">绝缘子爆破</option>
+                            <option value="4">杆塔倾斜</option>
+                            <option value="5">横杠弯曲下垂</option>
+                            <option value="6">瓷瓶破裂</option>
+                            <option value="7">吊杆变形</option>
+                            <option value="8">其他</option>
+                        </select>
+                        缺陷级别
+                        <select name="bugLevel" id="bugLevel" class="ui_select01">
+                            <option value="0">--请选择--</option>
+                            <option value="1">一般</option>
+                            <option value="2">紧急</option>
+                            <option value="3">严重</option>
+                        </select><br>
+                        发现时间:&nbsp;&nbsp;<input type="date" id="discoverTime1" name="discoverTime1" class="ui_input_txt02" > -
+                        <input type="date" id="discoverTime2" name="discoverTime2" class="ui_input_txt02" >
+                         下发时间:&nbsp;&nbsp;<input type="date" id="createdTime1" name="createdTime1" class="ui_input_txt02" > -
+                        <input type="date" id="createdTime2" name="createdTime2" class="ui_input_txt02" >
+                        <input type="button" id="search" name="search" value="查询" class="ui_input_btn01" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui_content">
+            <div id="loading" style="text-align: center;display: none"><img width="50px" height="50px" src="/Homework/Image/img/loading.gif"></div>
+            <div class="ui_tb">
+                <table class="table" cellspacing="0" cellpadding="0" width="100%" align="center" border="0"></table>
+            </div>
+        </div>
+    </div>
+</form>
+<div style="display:none"><script src='http://v7.cnzz.com/stat.php?id=155540&web_id=155540' language='JavaScript' charset='gb2312'></script></div>
+</body>
+<script type="text/javascript" src="../../JS/jquery/jquery-1.7.1.js"></script>
+<script>
+    $(function () {
+        // $("#search").click(function () {
+        //     $("#loading").css("display","block");
+        //     var InspectionMain={};
+        //     var productId = "";
+        //     var taskCode = $("#taskCode").val();
+        //     var lineCode = $("#lineCode").val();
+        //     var searchRunStatus = $("#searchRunStatus").val();
+        //     var creatorCode = $("#creatorCode").val();
+        //     var createdTime1 = $("#createdTime1").val();
+        //     var createdTime2 = $("#createdTime2").val();
+        //     if (new Date(createdTime2).getTime() < new Date(createdTime1).getTime()){
+        //         $("#loading").css("display","none");
+        //         art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'时间范围出错！', ok:true,});
+        //         return;
+        //     }
+        //     InspectionMain.productId = productId;
+        //     InspectionMain.taskCode = taskCode;
+        //     InspectionMain.lineCode = lineCode;
+        //     InspectionMain.searchRunStatus = searchRunStatus;
+        //     InspectionMain.creatorCode = creatorCode;
+        //     InspectionMain.createdTime1 = createdTime1;
+        //     InspectionMain.createdTime2 = createdTime2;
+        //     $.ajax({
+        //         url:"InspectionMainServlet",
+        //         type:"post",
+        //         data:InspectionMain,
+        //         dataType: "json",
+        //         success:function (data) {
+        //             $("#loading").css("display","none");
+        //             var html="";
+        //             html+="<tr>";
+        //             html+="<th>任务编号</th>"
+        //             html+="<th>任务名称</th>"
+        //             html+="<th>巡检线路</th>"
+        //             html+="<th>起始杆号</th>"
+        //             html+="<th>终止杆号</th>"
+        //             html+="<th>下发人</th>"
+        //             html+="<th>下发时间</th>"
+        //             html+="<th>任务状态</th>"
+        //             html+="<th>任务完成时间</th>"
+        //             html+="<th>是否取消</th>"
+        //             html+="<th>操作</th>"
+        //             html+="</tr>";
+        //             $.each(data,function(i,InspectionMain){
+        //                 html+="<tr>";
+        //                 html+="<td><span >"+InspectionMain.inspectionTaskCode+"</span></td>";
+        //                 html+="<td><span>"+InspectionMain.inspectionTaskName+"</span></td>";
+        //                 html+="<td><span>"+InspectionMain.lineName+"</span></td>";
+        //                 html+="<td><span>"+InspectionMain.startPoleCode+"</span></td>";
+        //                 html+="<td><span>"+InspectionMain.endPoleCode+"</span></td>";
+        //                 html+="<td><span>"+InspectionMain.issuedByName+"</span></td>";
+        //                 html+="<td><span>"+InspectionMain.issuedTime+"</span></td>";
+        //                 html+="<td><span>"+(InspectionMain.taskStatus == 0 ? "待分配": (InspectionMain.taskStatus == 1 ? "已分配":(InspectionMain.taskStatus == 2 ? "执行中":"已完成")))+"</span></td>";
+        //                 html+="<td><span>"+InspectionMain.finishTime+"</span></td>";
+        //                 html+="<td><span>"+(InspectionMain.isCancel==1 ? "是":"否")+"</span></td>";
+        //                 html+="<td>";
+        //                 html+="<a href=\"Inspection_View.html?InspectionTaskCode="+InspectionMain.inspectionTaskCode+"\" class='view'>查看  </a>";
+        //                 html+="<a href=\"Inspection_distribution.html?taskStatus="+InspectionMain.taskStatus+",InspectionTaskCode="+InspectionMain.inspectionTaskCode+",isCancel="+InspectionMain.isCancel+"\" class=\"distribution\">|  分配  |</a> ";
+        //                 html+="<a href=\"Inspection_edit.html?InspectionTaskCode="+InspectionMain.inspectionTaskCode+"\" class=\"edit\">  修改  |</a> ";
+        //                 html+="<a href=\"javascript:cancelWork('"+InspectionMain.isCancel+"','"+InspectionMain.inspectionTaskCode+"')\" class=\"cancel\" >   取消</a>";
+        //                 html+="</td>";
+        //                 html+="</tr>";
+        //             });
+        //             $("table tr").remove();
+        //             $("table").append(html);
+        //             $("table").append("<script type=\"text/javascript\" src = \"../../JS/javascript/InspectionMain.js\"><\/script>");
+        //         }
+        //     })
+        // })
+
+        var InspectionMain={};
+        var productId = "selectDetail";
+        InspectionMain.productId = productId;
+        $("#loading").css("display","block");
+        $.ajax({
+            url:"InspectionMainServlet",
+            type:"post",
+            dataType:"json",
+            data:InspectionMain,
+            success:function (data) {
+                $("#loading").css("display","none");
+                var html="";
+                html+="<tr>";
+                html+="<th>任务编号</th>"
+                html+="<th>线路编号</th>"
+                html+="<th>杆塔编号</th>"
+                html+="<th>缺陷级别</th>"
+                html+="<th>缺陷类型</th>"
+                html+="<th>发现人</th>"
+                html+="<th>发现时间</th>"
+                html+="<th>下发人</th>"
+                html+="<th>下发时间</th>"
+                html+="<th>完好率</th>"
+                html+="<th>缺陷描述</th>"
+                html+="</tr>";
+                $.each(data,function(i,InspectionMain){
+                    html+="<tr>";
+                    html+="<td><span >"+InspectionMain.taskId+"</span></td>";
+                    html+="<td><span>"+InspectionMain.lineCode+"</span></td>";
+                    html+="<td><span>"+InspectionMain.poleCode+"</span></td>";
+                    html+="<td><span>"+InspectionMain.bugLevelName+"</span></td>";
+                    html+="<td><span>"+InspectionMain.bugTypeName+"</span></td>";
+                    html+="<td><span>"+InspectionMain.discoverName+"</span></td>";
+                    html+="<td><span>"+InspectionMain.discoverTime+"</span></td>";
+                    html+="<td><span>"+InspectionMain.createdBy+"</span></td>";
+                    html+="<td><span>"+InspectionMain.creationTime+"</span></td>";
+                    html+="<td><span>"+InspectionMain.intactRate+"%"+"</span></td>";
+                    html+="<td><span>"+InspectionMain.common+"</span></td>";
+                    html+="</tr>";
+                });
+                $("table tr:not(:first)").remove();
+                $("table").append(html);
+                $("table").append("<script type=\"text/javascript\" src = \"../../JS/javascript/InspectionMain.js\"><\/script>");
+            }
+        })
+    })
+</script>
+<script type="text/javascript" src = "../../JS/javascript/InspectionMain.js"></script>
+<script type="text/javascript" src="../../JS/artDialog/artDialog.js?skin=default"></script>
+<script type="text/javascript" src="../../JS/authority/commonAll.js"></script>
+<script type="text/javascript" src="../../JS/fancybox/jquery.fancybox-1.3.4.js"></script>
+<script type="text/javascript" src="../../JS/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+</html>

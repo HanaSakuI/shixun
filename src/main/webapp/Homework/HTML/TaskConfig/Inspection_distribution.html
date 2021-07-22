@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>巡检任务管理</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="../../CSS/authority/basic_layout.css" rel="stylesheet" type="text/css">
+    <link href="../../CSS/authority/common_style.css" rel="stylesheet" type="text/css">
+    <link href="../../CSS/javacss/LineEdit.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="../../JS/jquery/jquery-1.7.1.js"></script>
+    <script type="text/javascript" src="../../JS/javascript/jquery.js"></script>
+    <script type="text/javascript" src="../../JS/jquery/jquery-1.4.4.min.js"></script>
+    <script type="text/javascript" src="../../JS/authority/commonAll.js"></script>
+    <script src="../../JS/My97DatePicker/WdatePicker.js" type="text/javascript" defer="defer"></script>
+    <script type="text/javascript" src="../../JS/artDialog/artDialog.js?skin=default"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            /*
+             * 提交
+             */
+            $("#submitbutton").click(function() {
+                    checkFyFhSubmit();
+            });
+
+            /*
+             * 取消
+             */
+            $("#cancelbutton").click(function() {
+                /**  关闭弹出iframe  **/
+                window.parent.$.fancybox.close();
+            });
+
+            var result = 'null';
+            if(result =='success'){
+                /**  关闭弹出iframe  **/
+                window.parent.$.fancybox.close();
+            }
+        });
+
+        /** 提交form  **/
+        function checkFyFhSubmit(){
+            var s = document.getElementsByName("userInspector");
+            var length = s.length;
+            var input = "";
+            for(var i=0;i<length;i++){
+                if (s[i].checked){
+                    input += s[i].value+" ";
+                }
+            }
+            if (input == ""){ art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'您还未选择分配人员', ok:true,});return;}
+            var Inspection = {};
+            Inspection.productId = "runDistribute";
+            Inspection.inspetor = input;
+            Inspection.InspectCode = $("#InspectCode").val();
+            $.ajax({
+                type:"POST",
+                url:"InspectionMainServlet",
+                data:Inspection,
+                dataType : "json",
+                success:function(data){
+                    if(data.flag=="error"){
+                        art.dialog({icon:'error', title:'友情提示', drag:false, resize:false, content:'异常错误，修改失败', ok:true,});
+                    }else{
+                        alert("分配成功！");
+                        window.parent.$.fancybox.close();
+                    }
+                }
+            });
+        }
+
+    </script>
+</head>
+<body>
+<form id="submitForm" name="submitForm"  method="post">
+    <div id="container">
+        <div id="nav_links">
+            当前位置：巡检任务管理&nbsp;>&nbsp;<span style="color: #1A5CC6;">分配巡检任务</span>
+            <div id="page_close">
+                <a href="javascript:parent.$.fancybox.close();">
+                    <img src="../../Image/common/page_close.png" width="20" height="20" style="vertical-align: text-top;"/>
+                </a>
+            </div>
+        </div>
+        <div class="ui_content">
+            <h3 style="text-align: center">待分配巡检员</h3>
+            <input type="hidden" name ="InspectCode" id="InspectCode">
+            <div id="loading" style="text-align: center;display: none"><img width="50px" height="50px" src="/Homework/Image/img/loading.gif"></div>
+            <table class="ttable" cellspacing="0" cellpadding="0"></table>
+            <footer style="margin-top: 30px">
+                &nbsp;<input id="submitbutton" type="button" value="分配" class="firm"/>
+                &nbsp;<input id="cancelbutton" type="button" value="取消" />
+            </footer>
+        </div>
+    </div>
+</form>
+<div style="display:none"><script src='http://v7.cnzz.com/stat.php?id=155540&web_id=155540' language='JavaScript' charset='gb2312'></script></div>
+</body>
+<script>
+    $(function () {
+        var taskStatus = location.href.split(",")[0].split("=")[1];
+        var InspectionTaskCode = location.href.split(",")[1].split("=")[1];
+        var isCancel = location.href.split(",")[2].split("=")[1];
+
+        if (taskStatus != '0'){
+           alert("该任务已分配");
+           window.parent.$.fancybox.close();
+        }else if (isCancel != '0'){
+            alert("该任务已取消");
+            window.parent.$.fancybox.close();
+        } else {
+            $("#loading").css("display","block");
+            $("#InspectCode").val(InspectionTaskCode);
+            $.ajax({
+                url:"InspectionMainServlet",
+                type:"post",
+                data:{"productId":"distribution"},
+                dataType: "json",
+                success:function (data) {
+                    $("#loading").css("display","none");
+                    var html  = ""
+                    $.each(data,function(i,InspectionMain){
+                        html+="<tr>";
+                        html+="<td class=\"td\"><input  class='inp' style='font-size: 16px' name=\"userInspector\" type=\"checkbox\" value="+InspectionMain.userCode+" >&nbsp;&nbsp;&nbsp;"+InspectionMain.userName+"  </td>";
+                        html+="</tr>";
+                    });
+                    $("table tr:not(:first)").remove();
+                    $("table").append(html);
+                }
+            })
+        }
+
+    })
+</script>
+</html>
